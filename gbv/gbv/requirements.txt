@@ -1,0 +1,4 @@
+django
+django-ratelimit
+django-webpush
+pywebpush

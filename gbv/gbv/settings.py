@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts',
+    'public',
+    'administration',
+    'cases',
 ]
 
 MIDDLEWARE = [
@@ -54,13 +58,17 @@ ROOT_URLCONF = 'gbv.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Project‑level templates folder (optional but recommended)
+        'DIRS': [BASE_DIR / 'templates'],
+        # App‑level templates are automatically discovered because APP_DIRS=True
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Makes {{ MEDIA_URL }} available in all templates
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -115,3 +123,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Additional locations of static files (project‑level)
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+# Folder where collected static files will be stored (for production)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+
+# Media files (user‑uploaded files)
+# https://docs.djangoproject.com/en/6.0/topics/files/
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "accounts.User"
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "cases:dashboard"
+LOGOUT_REDIRECT_URL = "accounts:login"
+
+# config/settings.py
+RATELIMIT_ENABLE = True
+RATELIMIT_VIEW = "public.views.ratelimited_view"  # optional custom 429 page

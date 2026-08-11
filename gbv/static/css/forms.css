@@ -23,7 +23,7 @@
 .field-hint--section { margin-bottom: 1rem; }
 
 input[type="text"], input[type="date"], input[type="url"], input[type="email"], input[type="file"],
-textarea, select {
+input[type="password"], textarea, select {
   width: 100%;
   font-family: var(--font-body);
   font-size: 0.95rem;
@@ -34,7 +34,7 @@ textarea, select {
   color: var(--ink);
 }
 textarea { resize: vertical; }
-input:focus, textarea:focus, select:focus {
+input:focus, input[type="password"]:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--sage);
   box-shadow: 0 0 0 3px rgba(92,141,118,0.15);
@@ -53,9 +53,39 @@ input:focus, textarea:focus, select:focus {
 .credential__value { font-family: var(--font-display); font-size: 1.3rem; color: var(--deep); word-break: break-all; }
 .confirm-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
 .confirm-page__note { font-size: 0.85rem; color: #6B7A7D; }
+.confirm-page__warn { font-size: 0.88rem; color: #8A5A17; background: #FDF6E9; border: 1px solid #F0E2C4; border-radius: 8px; padding: 0.7rem 1rem; margin: 0 0 1.5rem; }
+.confirm-next { text-align: left; border-top: 1px solid rgba(28,43,46,0.08); padding-top: 1.5rem; margin-top: 0.5rem; }
+.confirm-next h2 { font-family: var(--font-display); font-size: 1.15rem; color: var(--deep); margin-bottom: 0.9rem; text-align: center; }
+.confirm-next__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.85rem; }
+.confirm-next__list li { font-size: 0.92rem; color: #4A5A5D; padding-left: 1.6rem; position: relative; }
+.confirm-next__list li::before { content: ""; position: absolute; left: 0; top: 0.28rem; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--indigo); }
+.confirm-next__list strong { color: var(--ink); }
 
 /* Status / update thread */
 .status-card { background: #fff; border-radius: var(--radius); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(28,43,46,0.08); }
+.status-card > .eyebrow { margin-bottom: 0.35rem; }
+
+/* Progress tracker */
+.progress-track { display: flex; align-items: flex-start; margin: 1.75rem 0 1.25rem; }
+.progress-track__step { flex: 1; position: relative; text-align: center; min-width: 0; }
+.progress-track__step::before { content: ""; position: absolute; top: 11px; left: -50%; right: 50%; height: 2px; background: #DDE4DC; }
+.progress-track__step:first-child::before { display: none; }
+.progress-track__dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #C9D4CC; background: #fff; display: inline-flex; align-items: center; justify-content: center; position: relative; z-index: 1; font-size: 12px; line-height: 1; color: transparent; }
+.progress-track__label { display: block; font-size: 0.72rem; color: #6B7A7D; margin-top: 0.45rem; line-height: 1.3; }
+.progress-track__step.is-complete::before { background: var(--indigo); }
+.progress-track__step.is-complete .progress-track__dot { border-color: var(--indigo); background: var(--indigo); color: #fff; }
+.progress-track__step.is-current .progress-track__dot { border-color: var(--indigo); background: #fff; box-shadow: 0 0 0 4px rgba(90,94,157,0.18); color: var(--indigo); }
+.progress-track__step.is-current .progress-track__label { color: var(--indigo-deep); font-weight: 600; }
+
+.notification-banner { display: flex; justify-content: center; }
+.notification-banner .btn--small { margin-bottom: 0; }
+.notification-banner__note { font-size: 0.85rem; color: #6B7A7D; margin: 0; }
+
+@media (max-width: 520px) {
+  .progress-track__label { font-size: 0.62rem; }
+  .progress-track__dot { width: 20px; height: 20px; top: 11px; }
+  .progress-track__step::before { top: 9px; }
+}
 .update-thread { margin: 1.5rem 0; display: flex; flex-direction: column; gap: 0.9rem; }
 .update-thread__empty { color: #6B7A7D; font-size: 0.9rem; }
 .update { border-radius: 10px; padding: 0.9rem 1.1rem; max-width: 85%; }

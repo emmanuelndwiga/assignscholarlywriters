@@ -29,6 +29,12 @@ class CaseReportForm(forms.ModelForm):
             "contact_value": forms.TextInput(attrs={"placeholder": "Email address or phone number"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # "No contact / don't notify" is the model default; don't force victims
+        # to make an explicit choice, or the form rejects valid submissions.
+        self.fields["contact_method"].required = False
+
     def clean_date_of_incident(self):
         date = self.cleaned_data.get("date_of_incident")
         if date and date > timezone.now().date():

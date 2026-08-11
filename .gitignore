@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+*.egg-info/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Local secrets & generated keys
+.env
+.vapid_keys.json

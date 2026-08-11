@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Staff — Amani{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+  <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+  <link rel="stylesheet" href="{% static 'css/staff.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="staff-body">
+
+  <div class="staff-shell">
+    <aside class="staff-sidebar">
+      <a href="{% url 'cases:dashboard' %}" class="staff-brand">Amani <span>Staff workspace</span></a>
+      <nav class="staff-nav" aria-label="Staff">
+        <a href="{% url 'cases:dashboard' %}" class="staff-nav__link staff-nav__link--active">Dashboard</a>
+        {% if request.user.role == "supervisor" %}
+          <a href="{% url 'accounts:create_handler' %}" class="staff-nav__link">Invite staff</a>
+        {% endif %}
+      </nav>
+      <div class="staff-sidebar__foot">
+        <p class="staff-user">{{ request.user.get_full_name|default:request.user.username }}</p>
+        <p class="staff-user-role">{{ request.user.get_role_display }}</p>
+        <a href="{% url 'accounts:logout' %}" class="staff-logout">Log out</a>
+      </div>
+    </aside>
+
+    <div class="staff-main">
+      <header class="staff-topbar">
+        <div class="staff-topbar__title">{% block page_title %}{% endblock %}</div>
+        <div class="staff-topbar__user">
+          <span class="staff-topbar__name">{{ request.user.get_full_name|default:request.user.username }}</span>
+          <span class="staff-role-pill">{{ request.user.get_role_display }}</span>
+        </div>
+      </header>
+
+      {% if messages %}
+        <div class="page-messages">
+          {% for message in messages %}
+            <p class="msg msg--{{ message.tags }}">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <main class="staff-content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

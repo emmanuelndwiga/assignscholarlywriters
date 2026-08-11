@@ -1,41 +1,30 @@
-{% extends "base.html" %}
-{% block title %}Set Up Your Account{% endblock %}
+{% extends "auth_base.html" %}
+{% block title %}Set Up Your Account — Amani{% endblock %}
 {% block content %}
-<div class="container">
-  <div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-      <div class="card shadow-sm">
-        <div class="card-body p-4">
-          <h1 class="h4 mb-1">Set up your account</h1>
-          <p class="text-muted small mb-3">
-            You've been invited as a <strong>{{ invitation.get_role_display }}</strong>.
-          </p>
+<h1>Set up your account</h1>
+<p class="text-muted">You've been invited as a <strong>{{ invitation.get_role_display }}</strong>.</p>
 
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
-          {% endif %}
+{% if form.non_field_errors %}
+  <div class="form-alert">{{ form.non_field_errors }}</div>
+{% endif %}
 
-          <form method="post" novalidate>
-            {% csrf_token %}
-            <div class="mb-3">
-              <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-              {{ form.username }}
-              {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors }}</div>{% endif %}
-            </div>
-            <div class="mb-3">
-              <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-              {{ form.password }}
-            </div>
-            <div class="mb-3">
-              <label for="{{ form.confirm_password.id_for_label }}" class="form-label">Confirm Password</label>
-              {{ form.confirm_password }}
-              {% if form.confirm_password.errors %}<div class="text-danger small">{{ form.confirm_password.errors }}</div>{% endif %}
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Create account</button>
-          </form>
-        </div>
-      </div>
-    </div>
+<form method="post" novalidate>
+  {% csrf_token %}
+  <div class="field">
+    <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+    {{ form.username }}
+    {{ form.username.errors }}
   </div>
-</div>
+  <div class="field">
+    <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+    {{ form.password }}
+    {{ form.password.errors }}
+  </div>
+  <div class="field">
+    <label class="form-label" for="{{ form.confirm_password.id_for_label }}">Confirm password</label>
+    {{ form.confirm_password }}
+    {{ form.confirm_password.errors }}
+  </div>
+  <button type="submit" class="btn btn--primary btn--wide">Create account</button>
+</form>
 {% endblock %}

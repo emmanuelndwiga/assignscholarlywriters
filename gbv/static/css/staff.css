@@ -6,7 +6,7 @@
 
 /* Sidebar */
 .staff-sidebar {
-  background: #2E3154;
+  background: linear-gradient(180deg, #2E3154 0%, #23264A 100%);
   color: #C9CCE8;
   display: flex;
   flex-direction: column;
@@ -36,7 +36,7 @@
   font-weight: 500;
 }
 .staff-nav__link:hover { background: rgba(255,255,255,0.08); color: #fff; }
-.staff-nav__link--active { background: var(--indigo); color: #fff; }
+.staff-nav__link--active { background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-deep) 100%); color: #fff; box-shadow: 0 4px 12px rgba(90,94,157,0.35); }
 .staff-sidebar__foot { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 1rem; }
 .staff-user { margin: 0; color: #fff; font-weight: 600; font-size: 0.92rem; padding: 0 0.75rem; }
 .staff-user-role { margin: 0.1rem 0 0; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #9FD6BC; padding: 0 0.75rem; }
@@ -62,13 +62,15 @@
 
 /* Stat cards */
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.75rem; }
-.stat-card { background: #fff; border-radius: var(--radius); padding: 1.1rem 1.25rem; border: 1px solid rgba(28,43,46,0.08); }
+.stat-card { background: #fff; border-radius: var(--radius); padding: 1.1rem 1.25rem 1.25rem; border: 1px solid rgba(28,43,46,0.08); box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+.stat-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--sage), var(--sage-dark)); }
+.stat-card--indigo::before { background: linear-gradient(90deg, var(--indigo), var(--indigo-deep)); }
 .stat-card__label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: #6B7A7D; }
 .stat-card__value { font-family: var(--font-display); font-size: 1.8rem; color: var(--deep); margin-top: 0.2rem; }
 .stat-card--indigo .stat-card__value { color: var(--indigo-deep); }
 
 /* Panels */
-.panel { background: #fff; border-radius: var(--radius); border: 1px solid rgba(28,43,46,0.08); margin-bottom: 1.5rem; }
+.panel { background: #fff; border-radius: var(--radius); border: 1px solid rgba(28,43,46,0.08); box-shadow: var(--shadow-sm); margin-bottom: 1.5rem; }
 .panel__head { padding: 1rem 1.25rem; border-bottom: 1px solid rgba(28,43,46,0.08); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
 .panel__head h2 { font-size: 1.02rem; color: var(--deep); margin: 0; }
 .panel__body { padding: 1.25rem; }

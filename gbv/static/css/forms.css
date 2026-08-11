@@ -6,9 +6,33 @@
 
 .report-form { margin-top: 2rem; }
 
-.form-section { border: 1px solid rgba(28,43,46,0.1); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; background: #fff; }
+.form-section { border: 1px solid rgba(28,43,46,0.08); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; background: #fff; box-shadow: var(--shadow-sm); }
 .form-section legend { font-family: var(--font-display); color: var(--deep); font-size: 1.1rem; padding: 0 0.4rem; }
-.form-section--collapsible summary { font-family: var(--font-display); color: var(--deep); font-size: 1.1rem; cursor: pointer; padding: 0.25rem 0; }
+.form-section--collapsible summary {
+  font-family: var(--font-display);
+  color: var(--deep);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+.form-section--collapsible summary::-webkit-details-marker { display: none; }
+.form-section--collapsible summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--sage-dark);
+  border-bottom: 2px solid var(--sage-dark);
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+  margin-left: auto;
+}
+.form-section--collapsible[open] summary::after { transform: rotate(-135deg); }
+.form-section--collapsible summary:hover { color: var(--sage-dark); }
 .form-section--collapsible[open] summary { margin-bottom: 1rem; }
 
 .optional-tag { font-family: var(--font-body); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sage-dark); background: #EAF2ED; padding: 0.15rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; }
@@ -32,13 +56,30 @@ input[type="password"], textarea, select {
   border-radius: 8px;
   background: var(--paper);
   color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 textarea { resize: vertical; }
 input:focus, input[type="password"]:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--sage);
-  box-shadow: 0 0 0 3px rgba(92,141,118,0.15);
+  box-shadow: 0 0 0 3px rgba(92,141,118,0.18);
 }
+
+input[type="file"] { padding: 0.55rem; }
+input[type="file"]::file-selector-button {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  background: #EAF2ED;
+  color: var(--sage-dark);
+  border: 1px solid rgba(92,141,118,0.35);
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  margin-right: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+input[type="file"]::file-selector-button:hover { background: #DCEBE2; }
 
 .form-alert { background: #FBEAEA; border: 1px solid #E4A9A9; color: #7A2C2C; padding: 0.8rem 1rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.9rem; }
 
@@ -46,7 +87,7 @@ input:focus, input[type="password"]:focus, textarea:focus, select:focus {
 .btn--small { padding: 0.5rem 1rem; font-size: 0.85rem; margin-bottom: 1.5rem; }
 
 /* Confirmation page */
-.confirm-card { background: #fff; border-radius: var(--radius); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(28,43,46,0.08); text-align: center; }
+.confirm-card { background: #fff; border-radius: var(--radius); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(28,43,46,0.08); box-shadow: var(--shadow-md); text-align: center; }
 .credential-box { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 1.75rem 0; }
 .credential { background: var(--paper); border: 1px dashed var(--sage); border-radius: 10px; padding: 1rem 1.5rem; min-width: 220px; }
 .credential__label { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sage-dark); margin-bottom: 0.3rem; }
@@ -62,8 +103,17 @@ input:focus, input[type="password"]:focus, textarea:focus, select:focus {
 .confirm-next__list strong { color: var(--ink); }
 
 /* Status / update thread */
-.status-card { background: #fff; border-radius: var(--radius); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(28,43,46,0.08); }
+.status-card { background: #fff; border-radius: var(--radius); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(28,43,46,0.08); box-shadow: var(--shadow-md); }
 .status-card > .eyebrow { margin-bottom: 0.35rem; }
+
+/* Narrow (track / auth-like) form card */
+.form-page--narrow .report-form {
+  background: #fff;
+  border: 1px solid rgba(28,43,46,0.08);
+  border-radius: var(--radius);
+  padding: clamp(1.5rem, 4vw, 2rem);
+  box-shadow: var(--shadow-md);
+}
 
 /* Progress tracker */
 .progress-track { display: flex; align-items: flex-start; margin: 1.75rem 0 1.25rem; }

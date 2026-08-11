@@ -1,0 +1,48 @@
+{% extends "public/_base.html" %}
+{% block title %}Track a report — Amani{% endblock %}
+{% block content %}
+<section class="form-page form-page--narrow">
+  <div class="form-page__header reveal">
+    <p class="eyebrow">Track a report</p>
+    <h1>Check your report's status</h1>
+    <p class="form-page__sub">Enter the reference number and tracking code you were given when you submitted your report.</p>
+  </div>
+
+  <form method="post" class="report-form reveal">
+    {% csrf_token %}
+    {% if error %}
+      <div class="form-alert">{{ error }}</div>
+    {% endif %}
+    <div class="field">
+      <label for="{{ form.reference_number.id_for_label }}">Reference number</label>
+      {{ form.reference_number }}
+      {{ form.reference_number.errors }}
+    </div>
+    <div class="field">
+      <label for="{{ form.tracking_code.id_for_label }}">Tracking code</label>
+      {{ form.tracking_code }}
+      <p class="field-hint">8 characters, e.g. XK4P-7QRT. Letters and numbers only — no 0/O or 1/I/L.</p>
+      {{ form.tracking_code.errors }}
+    </div>
+    <button type="submit" class="btn btn--primary btn--wide">View status</button>
+  </form>
+
+  <p class="form-page__footnote">
+    Don't have a report yet? <a href="{% url 'public:submit' %}">Submit one here</a>.
+  </p>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const codeInput = document.querySelector(".tracking-code-input");
+  if (codeInput) {
+    codeInput.addEventListener("input", (e) => {
+      let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+      if (value.length > 8) value = value.slice(0, 8);
+      if (value.length > 4) value = value.slice(0, 4) + "-" + value.slice(4);
+      e.target.value = value;
+    });
+  }
+</script>
+{% endblock %}

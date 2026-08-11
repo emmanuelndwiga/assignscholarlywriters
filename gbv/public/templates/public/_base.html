@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Amani — A confidential space{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+  <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <div class="safety-strip">
+    <span>If you are in immediate danger, contact local emergency services or a trusted person near you.</span>
+    <button class="quick-exit quick-exit--strip" data-quick-exit>Quick Exit</button>
+  </div>
+
+  <header class="site-header">
+    <a href="{% url 'public:landing' %}" class="brand">Amani</a>
+    <nav class="main-nav" aria-label="Primary">
+      <a href="{% url 'public:landing' %}#how-it-works">How it works</a>
+      <a href="{% url 'public:landing' %}#what-you-can-report">What you can report</a>
+      <a href="{% url 'public:track' %}" class="nav-track">Track a report</a>
+    </nav>
+    <button class="quick-exit quick-exit--header" data-quick-exit>
+      <span class="quick-exit__dot"></span> Quick Exit
+    </button>
+  </header>
+
+  <main>
+    {% if messages %}
+      <div class="page-messages">
+        {% for message in messages %}
+          <p class="msg msg--{{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-top">
+      <span class="brand brand--footer">Amani</span>
+      <button class="quick-exit quick-exit--footer" data-quick-exit>Quick Exit</button>
+    </div>
+    <p class="footer-note">This is a safe, judgment-free space. Whatever pace you need is the right one.</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="{% url 'public:submit' %}">Report an incident</a>
+      <a href="{% url 'public:track' %}">Track a report</a>
+      <a href="{% url 'accounts:login' %}">Staff login</a>
+    </nav>
+  </footer>
+
+  <script src="{% static 'js/landing.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

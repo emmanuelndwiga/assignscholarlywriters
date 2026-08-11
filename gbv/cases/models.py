@@ -13,6 +13,15 @@ def generate_reference():
     return f"GBV-{year}-{suffix}"
 
 
+# No 0/O, 1/I/L — avoids misreads when a victim writes this down or reads it back
+TRACKING_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+TRACKING_CODE_LENGTH = 8
+
+
+def generate_tracking_code(length=TRACKING_CODE_LENGTH):
+    return "".join(secrets.choice(TRACKING_CODE_ALPHABET) for _ in range(length))
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
@@ -64,7 +73,7 @@ class CaseReport(models.Model):
 
     # -- identifiers --
     reference_number = models.CharField(max_length=20, unique=True, default=generate_reference, editable=False)
-    tracking_code_hash = models.CharField(max_length=128)
+    tracking_code_hash = models.CharField(max_length=255)
 
     # -- classification --
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="cases")

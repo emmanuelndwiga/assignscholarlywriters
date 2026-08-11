@@ -22,7 +22,7 @@ class PushSubscription(models.Model):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                check=(
+                condition=(
                     models.Q(user__isnull=False, case__isnull=True)
                     | models.Q(user__isnull=True, case__isnull=False)
                 ),

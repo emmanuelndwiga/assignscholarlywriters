@@ -1,0 +1,105 @@
+{% extends "public/_base.html" %}
+{% block content %}
+
+  <section class="hero">
+    <div class="hero__copy reveal">
+      <p class="eyebrow">A confidential space</p>
+      <h1>You don't have to face this alone.</h1>
+      <p class="hero__sub">
+        Report online harassment, image-based abuse, stalking, or impersonation
+        — privately, and at your own pace. No account, no login, no pressure.
+      </p>
+      <div class="hero__actions">
+        <a href="{% url 'public:submit' %}" class="btn btn--primary">Report an incident</a>
+        <a href="{% url 'public:track' %}" class="btn btn--ghost">Track a report</a>
+      </div>
+      <p class="hero__reassure">
+        Everything you share stays private. You choose what to include, and you
+        can stop at any time.
+      </p>
+    </div>
+
+    <div class="hero__art" aria-hidden="true">
+      <svg viewBox="0 0 480 480" class="shelter-svg">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#5C8D76"/>
+            <stop offset="100%" stop-color="#1B3A4B"/>
+          </linearGradient>
+        </defs>
+        <circle class="drift drift--slow" cx="240" cy="240" r="190" fill="url(#g1)" opacity="0.12"/>
+        <path class="drift drift--med" d="M120,260 C120,150 200,90 260,110 C340,135 360,230 300,300 C245,365 120,370 120,260 Z" fill="#9C6B7A" opacity="0.18"/>
+        <path class="drift drift--fast" d="M200,90 C300,60 400,140 370,230 C345,300 250,320 200,270 C150,220 130,115 200,90 Z" fill="#5C8D76" opacity="0.22"/>
+        <circle cx="240" cy="240" r="70" fill="#F5F7F3" opacity="0.9"/>
+      </svg>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="how-it-works">
+    <p class="eyebrow eyebrow--center">How it works</p>
+    <h2 class="reveal">Three steps. Nothing more required of you.</h2>
+    <ol class="steps">
+      <li class="step reveal">
+        <span class="step__num">01</span>
+        <h3>Share what you're comfortable sharing</h3>
+        <p>Describe what happened in your own words. Add screenshots or links if you have them — or skip that entirely.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step__num">02</span>
+        <h3>Get a reference number and code</h3>
+        <p>Save these two — they're the only way anyone, including us, can find your report again.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step__num">03</span>
+        <h3>Check in whenever you're ready</h3>
+        <p>Return any time to see updates, or send a message to whoever is handling your case — no account needed.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="what-you-can-report" class="categories">
+    <p class="eyebrow eyebrow--center">What you can report</p>
+    <h2 class="reveal">If it happened to you online, it counts.</h2>
+    <div class="category-grid">
+      <div class="category-card reveal"><h3>Online harassment</h3><p>Threats, abuse, or repeated unwanted contact across platforms.</p></div>
+      <div class="category-card reveal"><h3>Non-consensual image sharing</h3><p>Intimate images or videos shared, or threatened to be shared, without your consent.</p></div>
+      <div class="category-card reveal"><h3>Cyberstalking</h3><p>Being tracked, monitored, or repeatedly contacted against your will.</p></div>
+      <div class="category-card reveal"><h3>Impersonation</h3><p>Someone using your name, photos, or identity without your permission.</p></div>
+      <div class="category-card reveal"><h3>Doxxing</h3><p>Your private information exposed publicly to intimidate or endanger you.</p></div>
+      <div class="category-card reveal"><h3>Sextortion</h3><p>Being threatened or coerced using intimate images or information.</p></div>
+      <div class="category-card category-card--other reveal"><h3>Something else</h3><p>Not seeing it here doesn't mean it doesn't matter. Tell us in your own words.</p></div>
+    </div>
+  </section>
+
+  <section id="your-safety" class="trust">
+    <p class="eyebrow eyebrow--center">Built around your safety</p>
+    <h2 class="reveal">Nothing here asks more of you than you're ready to give.</h2>
+    <div class="trust-grid">
+      <div class="trust-item reveal">
+        <div class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6"/></svg></div>
+        <h3>No account required</h3><p>You never have to register, sign in, or hand over an identity to be heard.</p>
+      </div>
+      <div class="trust-item reveal">
+        <div class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12c2-4 5-6 8-6s6 2 8 6c-2 4-5 6-8 6s-6-2-8-6z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg></div>
+        <h3>Anonymous by default</h3><p>You choose whether to leave any contact details at all. Fully anonymous is always valid.</p>
+      </div>
+      <div class="trust-item reveal">
+        <div class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="10" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.6"/></svg></div>
+        <h3>Kept confidential</h3><p>Only the person handling your case can see the details — never made public.</p>
+      </div>
+      <div class="trust-item reveal">
+        <div class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5l4 16 3-7 3 7 4-16" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+        <h3>Leave any time</h3><p>The Quick Exit button clears this site from your browser history in one click.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="exit-explainer">
+    <div class="exit-explainer__inner reveal">
+      <h2>About the Quick Exit button</h2>
+      <p>Pressing <strong>Quick Exit</strong> — or the <kbd>Esc</kbd> key, three times, at any point — immediately takes you to a neutral page and replaces this site in your browser history, so selecting "back" won't bring anyone here.</p>
+      <p class="exit-explainer__tip">For more privacy: use a private/incognito window, and clear your browser history when you're done.</p>
+    </div>
+  </section>
+
+{% endblock %}

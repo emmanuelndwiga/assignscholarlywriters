@@ -1,0 +1,117 @@
+{% extends "public/_base.html" %}
+{% block title %}Report an incident — Amani{% endblock %}
+{% block content %}
+<section class="form-page">
+  <div class="form-page__header reveal">
+    <p class="eyebrow">Report an incident</p>
+    <h1>Tell us what happened</h1>
+    <p class="form-page__sub">Only "What happened" is required. Everything else is optional — share as much or as little as you're comfortable with.</p>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="report-form reveal">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="form-alert">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <fieldset class="form-section">
+      <legend>What happened</legend>
+
+      <div class="field">
+        <label for="{{ form.category.id_for_label }}">Category <span class="req">*</span></label>
+        {{ form.category }}
+        {{ form.category.errors }}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.description.id_for_label }}">Description <span class="req">*</span></label>
+        {{ form.description }}
+        {{ form.description.errors }}
+      </div>
+
+      <div class="field">
+        <label>Attachments</label>
+        <input type="file" name="attachments" multiple accept="image/jpeg,image/png,image/webp,application/pdf">
+        <p class="field-hint">Screenshots, chat logs, or documents. JPG, PNG, WEBP, or PDF — up to 10MB each.</p>
+      </div>
+    </fieldset>
+
+    <details class="form-section form-section--collapsible">
+      <summary>Incident details <span class="optional-tag">optional</span></summary>
+      <div class="field-grid">
+        <div class="field">
+          <label for="{{ form.date_of_incident.id_for_label }}">Date of incident</label>
+          {{ form.date_of_incident }}
+          {{ form.date_of_incident.errors }}
+        </div>
+        <div class="field">
+          <label for="{{ form.approximate_time.id_for_label }}">Approximate time</label>
+          {{ form.approximate_time }}
+        </div>
+        <div class="field">
+          <label for="{{ form.platform.id_for_label }}">Platform</label>
+          {{ form.platform }}
+        </div>
+        <div class="field">
+          <label for="{{ form.platform_other.id_for_label }}">If "Other", specify</label>
+          {{ form.platform_other }}
+        </div>
+        <div class="field">
+          <label for="{{ form.location_context.id_for_label }}">Location or context</label>
+          {{ form.location_context }}
+        </div>
+        <div class="field">
+          <label for="{{ form.relationship_to_perpetrator.id_for_label }}">Relationship to the person involved</label>
+          {{ form.relationship_to_perpetrator }}
+        </div>
+      </div>
+    </details>
+
+    <details class="form-section form-section--collapsible">
+      <summary>About the person involved <span class="optional-tag">optional</span></summary>
+      <p class="field-hint field-hint--section">Only accessible to your assigned case handler. Share only what you're comfortable sharing.</p>
+      <div class="field-grid">
+        <div class="field">
+          <label for="{{ form.perpetrator_name.id_for_label }}">Name</label>
+          {{ form.perpetrator_name }}
+        </div>
+        <div class="field">
+          <label for="{{ form.perpetrator_username.id_for_label }}">Username / handle</label>
+          {{ form.perpetrator_username }}
+        </div>
+        <div class="field">
+          <label for="{{ form.perpetrator_profile_url.id_for_label }}">Profile URL</label>
+          {{ form.perpetrator_profile_url }}
+          {{ form.perpetrator_profile_url.errors }}
+        </div>
+        <div class="field">
+          <label for="{{ form.perpetrator_contact.id_for_label }}">Phone or email, if known</label>
+          {{ form.perpetrator_contact }}
+        </div>
+        <div class="field field--full">
+          <label for="{{ form.perpetrator_additional_info.id_for_label }}">Any other identifying details</label>
+          {{ form.perpetrator_additional_info }}
+        </div>
+      </div>
+    </details>
+
+    <fieldset class="form-section">
+      <legend>Staying in touch <span class="optional-tag">optional</span></legend>
+      <p class="field-hint field-hint--section">If it's not safe to receive updates, choose "No contact" — you can always check your status yourself using your tracking code.</p>
+      <div class="field-grid">
+        <div class="field">
+          <label for="{{ form.contact_method.id_for_label }}">How should we reach you?</label>
+          {{ form.contact_method }}
+        </div>
+        <div class="field">
+          <label for="{{ form.contact_value.id_for_label }}">Email or phone number</label>
+          {{ form.contact_value }}
+        </div>
+      </div>
+      {% if form.non_field_errors %}{% endif %}
+    </fieldset>
+
+    <button type="submit" class="btn btn--primary btn--wide">Submit report</button>
+  </form>
+</section>
+{% endblock %}

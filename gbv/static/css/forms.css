@@ -1,0 +1,80 @@
+.form-page, .confirm-page, .status-page { padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 5vw, 5rem); max-width: 760px; margin: 0 auto; }
+.form-page--narrow { max-width: 480px; }
+
+.form-page__header h1, .confirm-card h1, .status-card h1 { color: var(--deep); font-size: clamp(1.7rem, 3vw, 2.4rem); margin-bottom: 0.75rem; }
+.form-page__sub, .confirm-page__sub, .status-card__meta { color: #4A5A5D; }
+
+.report-form { margin-top: 2rem; }
+
+.form-section { border: 1px solid rgba(28,43,46,0.1); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; background: #fff; }
+.form-section legend { font-family: var(--font-display); color: var(--deep); font-size: 1.1rem; padding: 0 0.4rem; }
+.form-section--collapsible summary { font-family: var(--font-display); color: var(--deep); font-size: 1.1rem; cursor: pointer; padding: 0.25rem 0; }
+.form-section--collapsible[open] summary { margin-bottom: 1rem; }
+
+.optional-tag { font-family: var(--font-body); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sage-dark); background: #EAF2ED; padding: 0.15rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; }
+.req { color: var(--mauve); }
+
+.field { margin-bottom: 1.1rem; }
+.field--full { grid-column: 1 / -1; }
+.field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 1.25rem; }
+
+.field label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: 0.4rem; }
+.field-hint { font-size: 0.82rem; color: #6B7A7D; margin: 0.3rem 0 0; }
+.field-hint--section { margin-bottom: 1rem; }
+
+input[type="text"], input[type="date"], input[type="url"], input[type="email"], input[type="file"],
+textarea, select {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(28,43,46,0.18);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+}
+textarea { resize: vertical; }
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(92,141,118,0.15);
+}
+
+.form-alert { background: #FBEAEA; border: 1px solid #E4A9A9; color: #7A2C2C; padding: 0.8rem 1rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.9rem; }
+
+.btn--wide { width: 100%; text-align: center; }
+.btn--small { padding: 0.5rem 1rem; font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+/* Confirmation page */
+.confirm-card { background: #fff; border-radius: var(--radius); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(28,43,46,0.08); text-align: center; }
+.credential-box { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 1.75rem 0; }
+.credential { background: var(--paper); border: 1px dashed var(--sage); border-radius: 10px; padding: 1rem 1.5rem; min-width: 220px; }
+.credential__label { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sage-dark); margin-bottom: 0.3rem; }
+.credential__value { font-family: var(--font-display); font-size: 1.3rem; color: var(--deep); word-break: break-all; }
+.confirm-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.confirm-page__note { font-size: 0.85rem; color: #6B7A7D; }
+
+/* Status / update thread */
+.status-card { background: #fff; border-radius: var(--radius); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(28,43,46,0.08); }
+.update-thread { margin: 1.5rem 0; display: flex; flex-direction: column; gap: 0.9rem; }
+.update-thread__empty { color: #6B7A7D; font-size: 0.9rem; }
+.update { border-radius: 10px; padding: 0.9rem 1.1rem; max-width: 85%; }
+.update--handler { background: var(--paper); align-self: flex-start; }
+.update--victim { background: #EAF2ED; align-self: flex-end; }
+.update__author { display: block; font-size: 0.75rem; font-weight: 600; color: var(--sage-dark); margin-bottom: 0.3rem; }
+.update__message { margin: 0; font-size: 0.92rem; }
+.update__time { display: block; font-size: 0.72rem; color: #8A9699; margin-top: 0.3rem; }
+
+.reply-form { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.reply-form label { font-weight: 600; font-size: 0.9rem; }
+
+.page-messages { max-width: 760px; margin: 1rem auto 0; padding: 0 1.25rem; }
+.msg { padding: 0.7rem 1rem; border-radius: 8px; font-size: 0.9rem; }
+.msg--error { background: #FBEAEA; color: #7A2C2C; }
+.msg--success { background: #EAF2ED; color: #2E5942; }
+.msg--info { background: #EAF0F5; color: #1B3A4B; }
+
+@media (max-width: 600px) {
+  .field-grid { grid-template-columns: 1fr; }
+  .credential { min-width: 100%; }
+}

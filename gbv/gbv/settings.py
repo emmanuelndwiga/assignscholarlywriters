@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'public',
     'notifications',
     'cases',
+    'admin_panel',
 ]
 
 MIDDLEWARE = [

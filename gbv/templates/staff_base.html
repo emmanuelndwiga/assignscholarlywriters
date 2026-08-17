@@ -20,6 +20,7 @@
       <nav class="staff-nav" aria-label="Staff">
         <a href="{% url 'cases:dashboard' %}" class="staff-nav__link staff-nav__link--active">Dashboard</a>
         {% if request.user.role == "supervisor" %}
+          <a href="{% url 'admin_panel:overview' %}" class="staff-nav__link">Admin Panel</a>
           <a href="{% url 'accounts:create_handler' %}" class="staff-nav__link">Invite staff</a>
         {% endif %}
       </nav>

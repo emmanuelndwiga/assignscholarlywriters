@@ -1,0 +1,145 @@
+{% extends "admin_base.html" %}
+{% block title %}Safereport - Admin Overview{% endblock %}
+
+{% block content %}
+<div class="mb-10 flex justify-between items-end">
+  <div>
+    <h2 class="font-headline-lg text-headline-lg text-primary mb-2">System Overview</h2>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Real-time monitoring and incident triage.</p>
+  </div>
+  <div class="text-body-sm font-data-mono text-on-surface-variant bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant">
+    Last updated: {% now "M d, Y H:i" %}
+  </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-2">
+      <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Cases</span>
+      <span class="material-symbols-outlined text-outline text-[18px]">report</span>
+    </div>
+    <div class="font-headline-xl text-headline-xl text-primary">{{ total_cases }}</div>
+  </div>
+  <div class="bg-surface-container-lowest border border-secondary rounded-lg p-6 shadow-sm relative overflow-hidden">
+    <div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+    <div class="flex items-center justify-between mb-2 pl-2">
+      <span class="font-label-sm text-label-sm text-secondary uppercase font-semibold">Pending Review</span>
+      <span class="material-symbols-outlined text-secondary text-[18px]">pending_actions</span>
+    </div>
+    <div class="font-headline-xl text-headline-xl text-primary pl-2">{{ pending_review }}</div>
+  </div>
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-2">
+      <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Under Review</span>
+      <span class="material-symbols-outlined text-outline text-[18px]">rate_review</span>
+    </div>
+    <div class="font-headline-xl text-headline-xl text-primary">{{ under_review }}</div>
+  </div>
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-2">
+      <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Escalated</span>
+      <span class="material-symbols-outlined text-status-danger text-[18px]">warning</span>
+    </div>
+    <div class="font-headline-xl text-headline-xl text-status-danger">{{ escalated }}</div>
+  </div>
+</div>
+
+<!-- 12 Column Grid Layout -->
+<div class="grid grid-cols-12 gap-10">
+  <!-- Column 1: Recent Reports (Spans 8 cols) -->
+  <div class="col-span-12 lg:col-span-8 flex flex-col">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-lg flex-1 flex flex-col shadow-sm">
+      <div class="p-6 border-b border-outline-variant flex justify-between items-center bg-surface rounded-t-lg">
+        <h3 class="font-label-md text-label-md text-primary uppercase tracking-wider">Recent Reports</h3>
+        <a href="{% url 'admin_panel:reports' %}" class="text-secondary font-label-sm text-label-sm hover:underline">View All</a>
+      </div>
+      <div class="flex-1 overflow-y-auto p-0">
+        {% if recent_cases %}
+          {% for case in recent_cases %}
+            <div class="border-b border-outline-variant p-6 hover:bg-surface-container-low transition-colors group">
+              <div class="flex justify-between items-start mb-3">
+                <div class="flex items-center gap-3">
+                  {% if case.status == "escalated" %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-error-container text-on-error-container font-label-sm text-[11px] uppercase font-bold tracking-wider">Escalated</span>
+                  {% elif case.status == "under_review" %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-secondary/10 text-secondary font-label-sm text-[11px] uppercase font-bold tracking-wider">Under Review</span>
+                  {% elif case.status == "resolved" %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-status-success/10 text-status-success font-label-sm text-[11px] uppercase font-bold tracking-wider">Resolved</span>
+                  {% elif case.status == "closed" %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-surface-variant text-on-surface-variant font-label-sm text-[11px] uppercase font-bold tracking-wider">Closed</span>
+                  {% else %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-[#FEF3C7] text-[#92400E] font-label-sm text-[11px] uppercase font-bold tracking-wider">Submitted</span>
+                  {% endif %}
+                  <span class="font-data-mono text-data-mono text-on-surface-variant">{{ case.reference_number }}</span>
+                </div>
+                <span class="font-data-mono text-data-mono text-on-surface-variant">{{ case.created_at|timesince }} ago</span>
+              </div>
+              <h4 class="font-headline-md text-[20px] text-primary mb-2">{{ case.category }}</h4>
+              <p class="font-body-md text-body-md text-on-surface-variant mb-4 truncate max-w-xl">{{ case.description }}</p>
+              <div class="flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div class="flex items-center gap-2">
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Assigned:</span>
+                  <span class="font-body-sm text-body-sm text-primary font-medium">{{ case.assigned_handler|default:"Unassigned" }}</span>
+                </div>
+                <a href="{% url 'cases:detail' case.pk %}" class="px-4 py-2 bg-secondary text-on-secondary rounded hover:bg-secondary-container font-label-md text-label-md">Review</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="p-12 text-center">
+            <span class="material-symbols-outlined text-4xl text-on-surface-variant mb-4">inbox</span>
+            <p class="font-body-md text-body-md text-on-surface-variant">No reports yet.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Column 2: System Status & Quick Stats (Spans 4 cols) -->
+  <div class="col-span-12 lg:col-span-4 space-y-10">
+    <!-- System Status Widget -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+      <h3 class="font-label-md text-label-md text-primary uppercase tracking-wider mb-6 border-b border-outline-variant pb-3">Quick Stats</h3>
+      <div class="space-y-6">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <div class="w-3 h-3 rounded-full bg-status-success shadow-sm"></div>
+            <span class="font-body-md text-body-md text-primary">Total Users</span>
+          </div>
+          <span class="font-data-mono text-data-mono text-on-surface font-medium">{{ total_users }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <div class="w-3 h-3 rounded-full bg-status-success shadow-sm"></div>
+            <span class="font-body-md text-body-md text-primary">Active Users</span>
+          </div>
+          <span class="font-data-mono text-data-mono text-status-success font-medium">{{ active_users }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <div class="w-3 h-3 rounded-full bg-status-info shadow-sm"></div>
+            <span class="font-body-md text-body-md text-primary">Resolved Today</span>
+          </div>
+          <span class="font-data-mono text-data-mono text-on-surface font-medium">{{ resolved_today }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Breakdown -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+      <h3 class="font-label-md text-label-md text-primary uppercase tracking-wider mb-6 border-b border-outline-variant pb-3">Categories (30d)</h3>
+      <div class="space-y-4">
+        {% for cat in category_counts %}
+          <div class="flex justify-between items-center">
+            <span class="font-body-sm text-body-sm text-on-surface">{{ cat.category__name }}</span>
+            <span class="font-data-mono text-data-mono text-on-surface-variant">{{ cat.count }}</span>
+          </div>
+        {% empty %}
+          <p class="font-body-sm text-body-sm text-on-surface-variant">No data yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

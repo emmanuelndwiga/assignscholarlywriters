@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>{% block title %}Safereport - Admin{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline-variant": "#c6c6cd",
+            "primary": "#000000",
+            "background": "#fcf8fa",
+            "surface-tint": "#565e74",
+            "tertiary": "#000000",
+            "surface-container-high": "#eae7e9",
+            "outline": "#76777d",
+            "surface-bright": "#fcf8fa",
+            "tertiary-fixed-dim": "#b7c8e1",
+            "primary-container": "#131b2e",
+            "tertiary-container": "#0b1c30",
+            "on-primary-container": "#7c839b",
+            "on-secondary-fixed": "#00174b",
+            "surface": "#fcf8fa",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#dbe1ff",
+            "on-background": "#1b1b1d",
+            "primary-fixed-dim": "#bec6e0",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#d3e4fe",
+            "surface-container-low": "#f6f3f5",
+            "on-surface-variant": "#45464d",
+            "error": "#ba1a1a",
+            "inverse-surface": "#303032",
+            "error-container": "#ffdad6",
+            "status-danger": "#DC2626",
+            "on-secondary-container": "#fefcff",
+            "surface-container-highest": "#e4e2e4",
+            "on-tertiary": "#ffffff",
+            "secondary": "#0051d5",
+            "inverse-on-surface": "#f3f0f2",
+            "on-surface": "#1b1b1d",
+            "on-primary-fixed": "#131b2e",
+            "status-caution": "#F59E0B",
+            "primary-fixed": "#dae2fd",
+            "on-tertiary-fixed-variant": "#38485d",
+            "surface-alt": "#F8FAFC",
+            "inverse-primary": "#bec6e0",
+            "secondary-container": "#316bf3",
+            "surface-container": "#f0edef",
+            "on-error-container": "#93000a",
+            "on-tertiary-container": "#75859d",
+            "secondary-fixed-dim": "#b4c5ff",
+            "on-primary-fixed-variant": "#3f465c",
+            "surface-variant": "#e4e2e4",
+            "on-secondary-fixed-variant": "#003ea8",
+            "status-success": "#059669",
+            "surface-dim": "#dcd9db",
+            "on-tertiary-fixed": "#0b1c30",
+            "on-error": "#ffffff",
+            "status-info": "#0EA5E9",
+            "on-primary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "24px",
+            "stack-lg": "32px",
+            "unit": "4px",
+            "stack-sm": "8px",
+            "container-max": "1440px",
+            "margin-mobile": "16px",
+            "margin-desktop": "32px",
+            "stack-md": "16px"
+          },
+          "fontFamily": {
+            "data-mono": ["Inter"],
+            "body-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg": ["Hanken Grotesk"],
+            "headline-xl": ["Hanken Grotesk"],
+            "headline-md": ["Hanken Grotesk"],
+            "label-md": ["Inter"],
+            "body-sm": ["Inter"]
+          },
+          "fontSize": {
+            "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+            "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-outlined.filled {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body { min-height: max(884px, 100dvh); }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-surface-alt text-on-background font-body-md text-body-md antialiased min-h-screen">
+  <!-- SideNavBar -->
+  <nav class="bg-surface dark:bg-inverse-surface text-secondary dark:text-secondary-fixed font-body-md text-body-md h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline flex flex-col h-full py-stack-md z-50">
+    <div class="px-gutter mb-stack-lg">
+      <div class="flex items-center gap-stack-sm mb-stack-sm">
+        <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+          <span class="material-symbols-outlined">shield</span>
+        </div>
+        <h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Safereport</h1>
+      </div>
+      <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Risk Management</p>
+    </div>
+
+    <button class="mx-gutter mb-stack-lg bg-secondary text-on-secondary py-2 px-4 rounded hover:bg-secondary-container transition-colors font-label-md text-label-md flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+      New Report
+    </button>
+
+    <ul class="flex-1 space-y-1">
+      <li>
+        <a class="flex items-center gap-stack-sm px-gutter py-3 {% if active_page == 'overview' %}text-secondary border-l-4 border-secondary font-bold bg-surface-container-high{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-all duration-200 ease-in-out" href="{% url 'admin_panel:overview' %}">
+          <span class="material-symbols-outlined {% if active_page == 'overview' %}filled{% endif %}">dashboard</span>
+          Overview
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center gap-stack-sm px-gutter py-3 {% if active_page == 'reports' %}text-secondary border-l-4 border-secondary font-bold bg-surface-container-high{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-all duration-200 ease-in-out" href="{% url 'admin_panel:reports' %}">
+          <span class="material-symbols-outlined {% if active_page == 'reports' %}filled{% endif %}">assignment_late</span>
+          Reports
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center gap-stack-sm px-gutter py-3 {% if active_page == 'users' %}text-secondary border-l-4 border-secondary font-bold bg-surface-container-high{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-all duration-200 ease-in-out" href="{% url 'admin_panel:users' %}">
+          <span class="material-symbols-outlined {% if active_page == 'users' %}filled{% endif %}">group</span>
+          Users
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center gap-stack-sm px-gutter py-3 {% if active_page == 'analytics' %}text-secondary border-l-4 border-secondary font-bold bg-surface-container-high{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-all duration-200 ease-in-out" href="{% url 'admin_panel:analytics' %}">
+          <span class="material-symbols-outlined {% if active_page == 'analytics' %}filled{% endif %}">analytics</span>
+          Analytics
+        </a>
+      </li>
+    </ul>
+
+    <div class="mt-auto border-t border-outline-variant dark:border-outline pt-stack-sm">
+      <ul class="space-y-1">
+        <li>
+          <a class="flex items-center gap-stack-sm px-gutter py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low transition-all duration-200 ease-in-out" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            Settings
+          </a>
+        </li>
+        <li>
+          <a class="flex items-center gap-stack-sm px-gutter py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low transition-all duration-200 ease-in-out" href="{% url 'accounts:logout' %}">
+            <span class="material-symbols-outlined">logout</span>
+            Log out
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <div class="ml-64 flex flex-col min-h-screen">
+    <!-- TopNavBar -->
+    <header class="bg-surface dark:bg-inverse-surface text-primary dark:text-inverse-primary font-label-md text-label-md full-width top-0 sticky z-40 border-b border-outline-variant dark:border-outline flex justify-between items-center h-16 px-margin-desktop">
+      <div class="flex-1 flex items-center">
+        <div class="relative w-96">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+          <input class="w-full bg-surface-container-low border border-outline-variant rounded py-2 pl-10 pr-4 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary text-body-sm font-body-sm transition-colors" placeholder="Search reports, users..." type="text"/>
+        </div>
+      </div>
+      <div class="flex items-center gap-stack-sm">
+        <button class="p-2 text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-xl scale-95 active:opacity-80 transition-transform relative">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-status-danger rounded-full"></span>
+        </button>
+        <button class="p-2 text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-xl scale-95 active:opacity-80 transition-transform">
+          <span class="material-symbols-outlined">help</span>
+        </button>
+        <div class="ml-4 flex items-center gap-2">
+          <div class="w-9 h-9 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-md text-label-md">
+            {{ request.user.first_name.0|default:request.user.username.0 }}{{ request.user.last_name.0|default:"" }}
+          </div>
+          <span class="font-label-md text-label-md text-on-surface hidden lg:block">{{ request.user.get_full_name|default:request.user.username }}</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Canvas -->
+    <main class="flex-1 p-margin-desktop lg:p-12">
+      <div class="max-w-container-max mx-auto">
+        {% if messages %}
+          <div class="mb-6">
+            {% for message in messages %}
+              <div class="p-4 rounded-lg mb-2 {% if message.tags == 'success' %}bg-status-success/10 text-status-success border border-status-success/20{% elif message.tags == 'error' %}bg-status-danger/10 text-status-danger border border-status-danger/20{% elif message.tags == 'warning' %}bg-status-caution/10 text-status-caution border border-status-caution/20{% else %}bg-status-info/10 text-status-info border border-status-info/20{% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

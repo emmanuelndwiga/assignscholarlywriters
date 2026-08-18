@@ -1,4 +1,3 @@
-import secrets
 import json
 
 from django.conf import settings
@@ -8,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django_ratelimit.decorators import ratelimit
 
-from cases.models import CaseReport, Attachment
+from cases.models import CaseReport, Attachment, generate_tracking_code
 from notifications.models import PushSubscription
 from .forms import CaseReportForm, TrackingForm, ReplyForm, ALLOWED_ATTACHMENT_TYPES, MAX_ATTACHMENT_SIZE
 
@@ -23,7 +22,7 @@ def submit_report(request):
         form = CaseReportForm(request.POST)
         if form.is_valid():
             case = form.save(commit=False)
-            raw_code = secrets.token_urlsafe(6)
+            raw_code = generate_tracking_code()
             case.set_tracking_code(raw_code)
             case.save()
 
@@ -84,8 +83,10 @@ def reply_to_case(request, pk):
         return redirect("public:track")
 
     from cases.models import CaseUpdate
-    CaseUpdate.objects.create(case=case, author_type="victim", message=message, visibility="victim")
+    from notifications import services as notification_services
+    update = CaseUpdate.objects.create(case=case, author_type="victim", message=message, visibility="victim")
     messages.success(request, "Your message has been sent.")
+    notification_services.notify_staff(case, update=update)
 
     return render(request, "public/status.html", {
         "case": case,

@@ -1,0 +1,117 @@
+{% extends "admin_base.html" %}
+{% block title %}Safereport - User Directory{% endblock %}
+
+{% block content %}
+<div class="mb-10 flex justify-between items-end">
+  <div>
+    <h2 class="font-headline-lg text-headline-lg text-primary mb-2">User Directory</h2>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Manage platform access and roles.</p>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-2">
+      <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Users</span>
+      <span class="material-symbols-outlined text-secondary text-sm">group</span>
+    </div>
+    <div class="font-headline-xl text-headline-xl text-primary font-bold">{{ total_users }}</div>
+  </div>
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-16 h-16 bg-status-success/10 rounded-bl-full -mr-4 -mt-4"></div>
+    <div class="flex items-center justify-between mb-2">
+      <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Active Now</span>
+      <span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+    </div>
+    <div class="font-headline-xl text-headline-xl text-status-success font-bold">{{ active_users }}</div>
+  </div>
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-2">
+      <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Supervisors</span>
+      <span class="material-symbols-outlined text-on-surface-variant text-sm">admin_panel_settings</span>
+    </div>
+    <div class="font-headline-xl text-headline-xl text-primary font-bold">{{ supervisor_count }}</div>
+  </div>
+</div>
+
+<!-- Filter/Search Actions -->
+<form method="get" class="flex gap-2 mb-6">
+  <div class="relative flex-grow">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+    <input name="q" value="{{ search_query }}" class="w-full bg-surface-container-lowest border border-outline-variant rounded-md py-2 pl-9 pr-3 font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors" placeholder="Search users..." type="text"/>
+  </div>
+  <select name="role" class="bg-surface-container-lowest border border-outline-variant rounded-md px-3 py-2 font-label-md text-label-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors">
+    <option value="">All Roles</option>
+    <option value="case_handler" {% if role_filter == "case_handler" %}selected{% endif %}>Case Handler</option>
+    <option value="supervisor" {% if role_filter == "supervisor" %}selected{% endif %}>Supervisor</option>
+  </select>
+  <select name="status" class="bg-surface-container-lowest border border-outline-variant rounded-md px-3 py-2 font-label-md text-label-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors">
+    <option value="">All Status</option>
+    <option value="active" {% if status_filter == "active" %}selected{% endif %}>Active</option>
+    <option value="inactive" {% if status_filter == "inactive" %}selected{% endif %}>Inactive</option>
+  </select>
+  <button type="submit" class="bg-secondary text-on-secondary rounded-md px-4 py-2 font-label-md text-label-md hover:bg-secondary-container transition-colors shadow-sm">
+    Filter
+  </button>
+</form>
+
+<!-- User List Table -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden shadow-sm flex flex-col">
+  <div class="bg-surface-container-low border-b border-outline-variant px-4 py-2 flex justify-between items-center">
+    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Directory ({{ users_list|length }} users)</span>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-surface border-b border-outline-variant">
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">User</th>
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Email</th>
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Role</th>
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Status</th>
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Joined</th>
+        </tr>
+      </thead>
+      <tbody class="font-body-sm text-body-sm text-on-surface">
+        {% for user in users_list %}
+          <tr class="border-b border-outline-variant/50 hover:bg-surface-alt transition-colors cursor-pointer">
+            <td class="p-4 py-5">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-primary-fixed-dim flex items-center justify-center text-primary-container font-label-md shrink-0">
+                  {{ user.first_name.0|default:user.username.0 }}{{ user.last_name.0|default:"" }}
+                </div>
+                <div>
+                  <div class="font-label-md text-label-md text-primary">{{ user.get_full_name|default:user.username }}</div>
+                  <div class="text-on-surface-variant text-sm">@{{ user.username }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 py-5 text-on-surface-variant">{{ user.email|default:"—" }}</td>
+            <td class="p-4 py-5">
+              {% if user.role == "supervisor" %}
+                <span class="px-2.5 py-1.5 bg-secondary/10 text-secondary rounded text-xs font-bold uppercase tracking-wider">Supervisor</span>
+              {% else %}
+                <span class="px-2.5 py-1.5 bg-status-info/10 text-status-info rounded text-xs font-bold uppercase tracking-wider">Handler</span>
+              {% endif %}
+            </td>
+            <td class="p-4 py-5">
+              {% if user.is_active %}
+                <span class="px-2.5 py-1.5 bg-status-success/20 text-status-success rounded text-xs font-bold uppercase tracking-wider">Active</span>
+              {% else %}
+                <span class="px-2.5 py-1.5 bg-surface-variant text-on-surface-variant rounded text-xs font-bold uppercase tracking-wider">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="p-4 py-5 text-on-surface-variant">{{ user.date_joined|date:"M d, Y" }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="p-12 text-center text-on-surface-variant">
+              No users found matching your criteria.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

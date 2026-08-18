@@ -1,32 +1,25 @@
-{% extends "base.html" %}
-{% block title %}Staff Login{% endblock %}
+{% extends "auth_base.html" %}
+{% block title %}Staff Login — Amani{% endblock %}
 {% block content %}
-<div class="container">
-  <div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-      <div class="card shadow-sm">
-        <div class="card-body p-4">
-          <h1 class="h4 mb-3 text-center">Staff Login</h1>
+<h1>Staff login</h1>
+<p class="text-muted">Sign in to manage reports.</p>
 
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
-          {% endif %}
+{% if form.non_field_errors %}
+  <div class="form-alert">{{ form.non_field_errors }}</div>
+{% endif %}
 
-          <form method="post" novalidate>
-            {% csrf_token %}
-            <div class="mb-3">
-              <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-              {{ form.username }}
-            </div>
-            <div class="mb-3">
-              <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-              {{ form.password }}
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Log in</button>
-          </form>
-        </div>
-      </div>
-    </div>
+<form method="post" novalidate>
+  {% csrf_token %}
+  <div class="field">
+    <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+    {{ form.username }}
+    {{ form.username.errors }}
   </div>
-</div>
+  <div class="field">
+    <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+    {{ form.password }}
+    {{ form.password.errors }}
+  </div>
+  <button type="submit" class="btn btn--primary btn--wide">Log in</button>
+</form>
 {% endblock %}

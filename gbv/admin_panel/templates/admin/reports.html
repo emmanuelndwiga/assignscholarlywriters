@@ -1,0 +1,91 @@
+{% extends "admin_base.html" %}
+{% block title %}Safereport - All Reports{% endblock %}
+
+{% block content %}
+<div class="mb-10 flex justify-between items-end">
+  <div>
+    <h2 class="font-headline-lg text-headline-lg text-primary mb-2">All Reports</h2>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Browse and manage all incident reports.</p>
+  </div>
+</div>
+
+<!-- Filter/Search Actions -->
+<form method="get" class="flex gap-2 mb-6">
+  <div class="relative flex-grow">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+    <input name="q" value="{{ search_query }}" class="w-full bg-surface-container-lowest border border-outline-variant rounded-md py-2 pl-9 pr-3 font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors" placeholder="Search by reference, description, or perpetrator..." type="text"/>
+  </div>
+  <select name="status" class="bg-surface-container-lowest border border-outline-variant rounded-md px-3 py-2 font-label-md text-label-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors">
+    <option value="">All Status</option>
+    <option value="submitted" {% if status_filter == "submitted" %}selected{% endif %}>Submitted</option>
+    <option value="under_review" {% if status_filter == "under_review" %}selected{% endif %}>Under Review</option>
+    <option value="escalated" {% if status_filter == "escalated" %}selected{% endif %}>Escalated</option>
+    <option value="resolved" {% if status_filter == "resolved" %}selected{% endif %}>Resolved</option>
+    <option value="closed" {% if status_filter == "closed" %}selected{% endif %}>Closed</option>
+  </select>
+  <select name="category" class="bg-surface-container-lowest border border-outline-variant rounded-md px-3 py-2 font-label-md text-label-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors">
+    <option value="">All Categories</option>
+    {% for cat in categories %}
+      <option value="{{ cat.id }}" {% if category_filter == cat.id|stringformat:"d" %}selected{% endif %}>{{ cat.name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="bg-secondary text-on-secondary rounded-md px-4 py-2 font-label-md text-label-md hover:bg-secondary-container transition-colors shadow-sm">
+    Filter
+  </button>
+</form>
+
+<!-- Reports Table -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden shadow-sm flex flex-col">
+  <div class="bg-surface-container-low border-b border-outline-variant px-4 py-2 flex justify-between items-center">
+    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Reports ({{ cases|length }})</span>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-surface border-b border-outline-variant">
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Reference</th>
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Category</th>
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Date</th>
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Assigned To</th>
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Status</th>
+          <th class="font-label-sm text-label-sm text-on-surface-variant p-4 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="font-body-sm text-body-sm text-on-surface">
+        {% for case in cases %}
+          <tr class="border-b border-outline-variant/50 hover:bg-surface-alt transition-colors">
+            <td class="p-4 py-5 font-data-mono text-data-mono text-primary font-medium">
+              <a href="{% url 'cases:detail' case.pk %}" class="hover:underline">{{ case.reference_number }}</a>
+            </td>
+            <td class="p-4 py-5">{{ case.category }}</td>
+            <td class="p-4 py-5 text-on-surface-variant">{{ case.created_at|date:"M d, Y" }}</td>
+            <td class="p-4 py-5 text-on-surface-variant">{{ case.assigned_handler|default:"—" }}</td>
+            <td class="p-4 py-5">
+              {% if case.status == "escalated" %}
+                <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-error-container text-on-error-container font-label-sm text-[11px] uppercase font-bold tracking-wider">Escalated</span>
+              {% elif case.status == "under_review" %}
+                <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-secondary/10 text-secondary font-label-sm text-[11px] uppercase font-bold tracking-wider">Under Review</span>
+              {% elif case.status == "resolved" %}
+                <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-status-success/10 text-status-success font-label-sm text-[11px] uppercase font-bold tracking-wider">Resolved</span>
+              {% elif case.status == "closed" %}
+                <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-surface-variant text-on-surface-variant font-label-sm text-[11px] uppercase font-bold tracking-wider">Closed</span>
+              {% else %}
+                <span class="inline-flex items-center px-2.5 py-1 rounded-sm bg-[#FEF3C7] text-[#92400E] font-label-sm text-[11px] uppercase font-bold tracking-wider">Submitted</span>
+              {% endif %}
+            </td>
+            <td class="p-4 py-5">
+              <a href="{% url 'cases:detail' case.pk %}" class="text-secondary hover:underline font-label-md text-label-md">View</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="p-12 text-center text-on-surface-variant">
+              No reports found matching your criteria.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

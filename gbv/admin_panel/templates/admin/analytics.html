@@ -1,0 +1,137 @@
+{% extends "admin_base.html" %}
+{% block title %}Safereport - Safety Analytics{% endblock %}
+
+{% block content %}
+<div class="mb-10 flex justify-between items-end">
+  <div>
+    <h2 class="font-headline-lg text-headline-lg text-primary mb-2">Safety Analytics</h2>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Comprehensive overview of current incident data and response metrics.</p>
+  </div>
+  <div class="text-body-sm font-data-mono text-on-surface-variant bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant">
+    Last 30 Days
+  </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Total Incidents</p>
+    <div class="flex items-end gap-2">
+      <span class="font-headline-xl text-headline-xl text-primary">{{ total_incidents }}</span>
+      {% if total_change > 0 %}
+        <span class="font-body-md text-body-md text-status-danger flex items-center mb-1">
+          <span class="material-symbols-outlined text-[20px]">arrow_upward</span> {{ total_change_pct }}%
+        </span>
+      {% elif total_change < 0 %}
+        <span class="font-body-md text-body-md text-status-success flex items-center mb-1">
+          <span class="material-symbols-outlined text-[20px]">arrow_downward</span> {{ total_change_pct }}%
+        </span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Critical Alerts</p>
+    <div class="flex items-end gap-2">
+      <span class="font-headline-xl text-headline-xl text-primary">{{ critical_alerts }}</span>
+      {% if critical_change > 0 %}
+        <span class="font-body-sm text-body-sm text-status-danger flex items-center mb-1">
+          <span class="material-symbols-outlined text-[16px]">arrow_upward</span> {{ critical_change }}
+        </span>
+      {% elif critical_change < 0 %}
+        <span class="font-body-sm text-body-sm text-status-success flex items-center mb-1">
+          <span class="material-symbols-outlined text-[16px]">arrow_downward</span> {{ critical_change_abs }}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Resolution Rate</p>
+    <div class="flex items-end gap-2">
+      <span class="font-headline-xl text-headline-xl text-primary">{{ resolution_rate }}%</span>
+    </div>
+  </div>
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Previous Period</p>
+    <div class="flex items-end gap-2">
+      <span class="font-headline-xl text-headline-xl text-primary">{{ total_previous }}</span>
+      <span class="font-body-sm text-body-sm text-on-surface-variant mb-1">incidents</span>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+  <!-- Category Distribution -->
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <h3 class="font-label-md text-label-md text-primary uppercase tracking-wider mb-6">Distribution by Category</h3>
+    <div class="flex flex-col items-center justify-center relative">
+      <svg class="w-48 h-48 transform -rotate-90" viewBox="0 0 100 100">
+        <circle class="text-surface-variant" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="15"></circle>
+        {% with total=total_incidents %}
+          {% for cat in category_breakdown %}
+            {% widthratio cat.count total 251 as dash_val %}
+            <circle class="transition-all duration-1000 ease-out" cx="50" cy="50" fill="transparent" r="40"
+              stroke="{% cycle '#0051d5' '#F59E0B' '#0EA5E9' '#059669' '#DC2626' %}"
+              stroke-dasharray="251.2" stroke-dashoffset="{{ cat.count }}"
+              stroke-width="15"
+              style="transform-origin: center; transform: rotate({% widthratio forloop.counter0 5 360 %}deg);"></circle>
+          {% endfor %}
+        {% endwith %}
+      </svg>
+      <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <span class="font-headline-lg text-headline-lg text-on-surface">{{ total_incidents }}</span>
+        <span class="font-label-sm text-label-sm text-on-surface-variant">Total</span>
+      </div>
+    </div>
+    <div class="mt-stack-md flex flex-col gap-unit">
+      {% for cat in category_breakdown %}
+        <div class="flex items-center justify-between py-2 border-b border-surface-variant last:border-0">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" style="background-color: {% cycle '#0051d5' '#F59E0B' '#0EA5E9' '#059669' '#DC2626' %}"></div>
+            <span class="font-body-sm text-body-sm text-on-surface">{{ cat.category__name|default:"Uncategorized" }}</span>
+          </div>
+          <span class="font-data-mono text-data-mono text-on-surface-variant">{{ cat.count }}</span>
+        </div>
+      {% empty %}
+        <p class="font-body-sm text-body-sm text-on-surface-variant text-center py-4">No data available.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Status Breakdown -->
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 shadow-sm">
+    <h3 class="font-label-md text-label-md text-primary uppercase tracking-wider mb-6">Status Breakdown</h3>
+    <div class="space-y-4">
+      {% for stat in status_breakdown %}
+        {% with pct=stat.count %}
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-body-sm text-body-sm text-on-surface">{{ stat.get_status_display }}</span>
+              <span class="font-data-mono text-data-mono text-on-surface-variant">{{ stat.count }}</span>
+            </div>
+            <div class="w-full bg-surface-variant rounded-full h-2">
+              <div class="h-2 rounded-full {% if stat.status == 'escalated' %}bg-status-danger{% elif stat.status == 'resolved' %}bg-status-success{% elif stat.status == 'under_review' %}bg-secondary{% elif stat.status == 'submitted' %}bg-status-caution{% else %}bg-on-surface-variant{% endif %}"
+                style="width: {% widthratio stat.count total_incidents 100 %}%"></div>
+            </div>
+          </div>
+        {% endwith %}
+      {% empty %}
+        <p class="font-body-sm text-body-sm text-on-surface-variant text-center py-4">No data available.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Platform Breakdown -->
+    <h3 class="font-label-md text-label-md text-primary uppercase tracking-wider mt-8 mb-4">Reporting Platform</h3>
+    <div class="space-y-3">
+      {% for plat in platform_breakdown %}
+        <div class="flex justify-between items-center py-2 border-b border-surface-variant last:border-0">
+          <span class="font-body-sm text-body-sm text-on-surface capitalize">{{ plat.get_platform_display }}</span>
+          <span class="font-data-mono text-data-mono text-on-surface-variant">{{ plat.count }}</span>
+        </div>
+      {% empty %}
+        <p class="font-body-sm text-body-sm text-on-surface-variant text-center py-2">No data available.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

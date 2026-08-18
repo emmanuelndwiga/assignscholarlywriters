@@ -1,0 +1,148 @@
+{% extends "staff_base.html" %}
+{% block title %}{{ case.reference_number }} — Amani Staff{% endblock %}
+{% block page_title %}<h1>{{ case.reference_number }}</h1>{% endblock %}
+{% block content %}
+<div class="detail-grid">
+  <div class="detail-grid__main">
+    <div class="panel">
+      <div class="panel__head">
+        <h2>Case summary</h2>
+        <span class="badge badge--{{ case.status }}">{{ case.get_status_display }}</span>
+      </div>
+      <div class="panel__body">
+        <dl class="definition-list">
+          <dt>Category</dt>
+          <dd>{{ case.category }}</dd>
+          <dt>Description</dt>
+          <dd>{{ case.description|linebreaksbr }}</dd>
+          <dt>Date of incident</dt>
+          <dd>{{ case.date_of_incident|date:"M d, Y"|default:"Not provided" }}{% if case.approximate_time %} · {{ case.approximate_time }}{% endif %}</dd>
+          <dt>Platform</dt>
+          <dd>{% if case.platform == "other" %}{{ case.platform_other }}{% else %}{{ case.get_platform_display }}{% endif %}</dd>
+          <dt>Location / context</dt>
+          <dd>{{ case.location_context|default:"Not provided" }}</dd>
+          <dt>Relationship to the person involved</dt>
+          <dd>{{ case.get_relationship_to_perpetrator_display|default:"Not provided" }}</dd>
+          <dt>Assigned handler</dt>
+          <dd>{{ case.assigned_handler|default:"Unassigned" }}</dd>
+          <dt>Submitted</dt>
+          <dd>{{ case.created_at|date:"M d, Y H:i" }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Perpetrator details</h2></div>
+      <div class="panel__body">
+        <dl class="definition-list">
+          <dt>Name</dt>
+          <dd>{{ case.perpetrator_name|default:"—" }}</dd>
+          <dt>Username / handle</dt>
+          <dd>{{ case.perpetrator_username|default:"—" }}</dd>
+          <dt>Profile URL</dt>
+          <dd>{% if case.perpetrator_profile_url %}<a href="{{ case.perpetrator_profile_url }}" rel="noopener" target="_blank">{{ case.perpetrator_profile_url }}</a>{% else %}—{% endif %}</dd>
+          <dt>Contact</dt>
+          <dd>{{ case.perpetrator_contact|default:"—" }}</dd>
+          <dt>Additional info</dt>
+          <dd>{{ case.perpetrator_additional_info|default:"—"|linebreaksbr }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Updates</h2></div>
+      <div class="panel__body">
+        {% if case.updates.all %}
+          <div class="update-thread">
+            {% for update in case.updates.all %}
+              <div class="update update--{{ update.author_type }}">
+                <span class="update__author">
+                  {% if update.author_type == "handler" %}{{ update.author_user|default:"Case handler" }}{% else %}Survivor{% endif %}
+                  {% if update.visibility == "internal" %} · <span class="staff-role-pill">internal</span>{% endif %}
+                </span>
+                <p class="update__message">{{ update.message }}</p>
+                <span class="update__time">{{ update.created_at|date:"M d, Y H:i" }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <p>No updates yet. Post a note below to keep the survivor informed.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="panel__body panel__body--muted">
+        <form method="post" action="{% url 'cases:add_update' case.pk %}" class="report-form report-form--compact">
+          {% csrf_token %}
+          <div class="field">
+            <label for="id_update_message">Post an update</label>
+            <textarea id="id_update_message" name="message" rows="3"
+                      placeholder="What should the survivor know? Keep it clear and supportive."></textarea>
+          </div>
+          <div class="inline-actions">
+            <select name="visibility" aria-label="Who can see this update">
+              <option value="victim">Visible to survivor</option>
+              <option value="internal">Internal note only</option>
+            </select>
+            <button type="submit" class="btn btn--primary btn--small">Post update</button>
+          </div>
+          <p class="field-hint">"Visible to survivor" also sends them a notification.</p>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Audit trail</h2></div>
+      <div class="panel__body">
+        {% if case.audit_log.all %}
+          <ul class="timeline">
+            {% for entry in case.audit_log.all %}
+              <li>
+                <span class="timeline__action">{{ entry.action }}</span>
+                {% if entry.detail %}<span class="timeline__detail"> — {{ entry.detail }}</span>{% endif %}
+                <span class="timeline__meta">{{ entry.actor|default:"System" }} · {{ entry.timestamp|date:"M d, Y H:i" }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="empty-state">
+            <p>No audit entries yet.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <aside class="detail-grid__side">
+    <div class="panel">
+      <div class="panel__head"><h2>Update status</h2></div>
+      <div class="panel__body">
+        <form method="post" action="{% url 'cases:update_status' case.pk %}">
+          {% csrf_token %}
+          <div class="status-actions">
+            {% for value, label in case.Status.choices %}
+              {% if value != "closed" or request.user.role == "supervisor" %}
+                <button type="submit" name="status" value="{{ value }}" class="btn--status{% if case.status == value %} is-current{% endif %}">{{ label }}</button>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </form>
+
+        {% if request.user.role == "supervisor" and case.status != "escalated" %}
+          <form method="post" action="{% url 'cases:escalate' case.pk %}" class="escalate-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn--ghost btn--small">Escalate to supervisor</button>
+          </form>
+        {% endif %}
+
+        {% if case.contact_method != "none" %}
+          <p class="escalate-note">
+            <strong>{{ case.get_contact_method_display }}:</strong> {{ case.contact_value }}
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </aside>
+</div>
+{% endblock %}

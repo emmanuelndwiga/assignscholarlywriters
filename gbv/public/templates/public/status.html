@@ -4,10 +4,69 @@
 <section class="status-page">
   <div class="status-card reveal">
     <p class="eyebrow">Report {{ case.reference_number }}</p>
-    <h1>Status: {{ case.get_status_display }}</h1>
+    <h1>{{ case.get_status_display }}</h1>
     <p class="status-card__meta">Category: {{ case.category }} · Submitted {{ case.created_at|date:"M d, Y" }}</p>
 
-    <button class="btn btn--ghost btn--small" id="enable-push">Get notified on this device</button>
+    <div class="progress-track" aria-label="Report progress">
+      {% if case.status == "submitted" %}
+        <div class="progress-track__step is-current">
+      {% else %}
+        <div class="progress-track__step is-complete">
+      {% endif %}
+          <span class="progress-track__dot">✓</span>
+          <span class="progress-track__label">Submitted</span>
+        </div>
+
+      {% if case.status == "under_review" %}
+        <div class="progress-track__step is-current">
+      {% elif case.status == "escalated" or case.status == "resolved" or case.status == "closed" %}
+        <div class="progress-track__step is-complete">
+      {% else %}
+        <div class="progress-track__step">
+      {% endif %}
+          <span class="progress-track__dot">✓</span>
+          <span class="progress-track__label">Under review</span>
+        </div>
+
+      {% if case.status == "escalated" %}
+        <div class="progress-track__step is-current">
+      {% elif case.status == "resolved" or case.status == "closed" %}
+        <div class="progress-track__step is-complete">
+      {% else %}
+        <div class="progress-track__step">
+      {% endif %}
+          <span class="progress-track__dot">✓</span>
+          <span class="progress-track__label">Escalated</span>
+        </div>
+
+      {% if case.status == "resolved" %}
+        <div class="progress-track__step is-current">
+      {% elif case.status == "closed" %}
+        <div class="progress-track__step is-complete">
+      {% else %}
+        <div class="progress-track__step">
+      {% endif %}
+          <span class="progress-track__dot">✓</span>
+          <span class="progress-track__label">Resolved</span>
+        </div>
+
+      {% if case.status == "closed" %}
+        <div class="progress-track__step is-current">
+      {% else %}
+        <div class="progress-track__step">
+      {% endif %}
+          <span class="progress-track__dot">✓</span>
+          <span class="progress-track__label">Closed</span>
+        </div>
+    </div>
+
+    <div class="notification-banner">
+      {% if vapid_public_key %}
+        <button class="btn btn--ghost btn--small" id="enable-push">Get notified on this device</button>
+      {% else %}
+        <p class="notification-banner__note">Check back here anytime — or track your report to see updates.</p>
+      {% endif %}
+    </div>
 
     <div class="update-thread">
       {% for update in case.updates.all %}
@@ -48,29 +107,32 @@
     return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)));
   }
 
-  document.getElementById("enable-push").addEventListener("click", async () => {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      alert("Notifications aren't supported on this browser.");
-      return;
-    }
-    const registration = await navigator.serviceWorker.register("{% url 'public:service_worker' %}");
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") return;
+  const enablePush = document.getElementById("enable-push");
+  if (enablePush && VAPID_PUBLIC_KEY) {
+    enablePush.addEventListener("click", async () => {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        alert("Notifications aren't supported on this browser.");
+        return;
+      }
+      const registration = await navigator.serviceWorker.register("{% url 'public:service_worker' %}");
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") return;
 
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-    });
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
 
-    await fetch("{% url 'public:push_subscribe' %}", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        reference_number: referenceNumber,
-        tracking_code: trackingCode,
-        subscription: subscription.toJSON(),
-      }),
+      await fetch("{% url 'public:push_subscribe' %}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reference_number: referenceNumber,
+          tracking_code: trackingCode,
+          subscription: subscription.toJSON(),
+        }),
+      });
     });
-  });
+  }
 </script>
 {% endblock %}

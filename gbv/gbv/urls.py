@@ -25,6 +25,7 @@ urlpatterns = [
     # App URLs
     path('staff/', include('accounts.urls')),
     path('staff/cases/', include('cases.urls')),  
+    path('dashboard/', include('admin_panel.urls')),
     path('', include('public.urls')),                   
 ]
 

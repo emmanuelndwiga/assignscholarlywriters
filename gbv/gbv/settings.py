@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import base64
+import json
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +44,7 @@ INSTALLED_APPS = [
     'public',
     'notifications',
     'cases',
+    'admin_panel',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +153,49 @@ AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "cases:dashboard"
 LOGOUT_REDIRECT_URL = "accounts:login"
+
+# Web Push (VAPID) keys for sending notifications to subscribed browsers.
+# VAPID_PUBLIC_KEY is read by the public status page ("Get notified" button);
+# VAPID_PRIVATE_KEY signs the push requests server-side (pywebpush).
+#
+# In production set both via environment variables. In development the keys are
+# generated once on first run and persisted to .vapid_keys.json (gitignored),
+# so every developer gets working push notifications with no configuration.
+# Generate a fresh pair manually with `vapid --gen` (from the py-vapid CLI).
+def _load_vapid_keys():
+    public_key = os.environ.get("VAPID_PUBLIC_KEY")
+    private_key = os.environ.get("VAPID_PRIVATE_KEY")
+    if public_key and private_key:
+        return public_key, private_key
+
+    keys_file = BASE_DIR / ".vapid_keys.json"
+    if keys_file.exists():
+        data = json.loads(keys_file.read_text())
+        return data["public_key"], data["private_key"]
+
+    from cryptography.hazmat.primitives import serialization
+    from py_vapid import Vapid
+
+    vapid = Vapid()
+    vapid.generate_keys()
+    public_key = base64.urlsafe_b64encode(
+        vapid.public_key.public_bytes(
+            serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint
+        )
+    ).rstrip(b"=").decode()
+    private_key = vapid.private_pem().decode()
+    keys_file.write_text(
+        json.dumps({"public_key": public_key, "private_key": private_key}, indent=2)
+    )
+    return public_key, private_key
+
+VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY = _load_vapid_keys()
+VAPID_ADMIN_EMAIL = os.environ.get("VAPID_ADMIN_EMAIL", "notifications@amani.local")
+
+# In development, print emails to the console instead of trying to send them
+# over SMTP (which fails without a mail server).
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # config/settings.py
 RATELIMIT_ENABLE = True

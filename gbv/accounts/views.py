@@ -68,7 +68,7 @@ def invite_handler(request):
                 fail_silently=False,
             )
             messages.success(request, f"Invitation sent to {invitation.email}.")
-            return redirect("accounts:invite_handler")
+            return redirect("accounts:create_handler")
     else:
         form = InviteHandlerForm()
 

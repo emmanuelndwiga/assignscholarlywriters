@@ -1,0 +1,42 @@
+{% extends "public/_base.html" %}
+{% block title %}Report received — Amani{% endblock %}
+{% block content %}
+<section class="confirm-page">
+  <div class="confirm-card reveal">
+    <p class="eyebrow">Report received</p>
+    <h1>Thank you for telling us.</h1>
+    <p class="confirm-page__sub">Your report is now with a trained case handler. Save the two details below somewhere safe — you'll need them to check on your report.</p>
+
+    <div class="credential-box">
+      <div class="credential">
+        <span class="credential__label">Reference number</span>
+        <span class="credential__value">{{ reference_number }}</span>
+      </div>
+      <div class="credential">
+        <span class="credential__label">Tracking code</span>
+        <span class="credential__value">{{ tracking_code }}</span>
+      </div>
+    </div>
+
+    <p class="confirm-page__warn">Keep these together. You'll need both to view updates, and this page will not remember them for you.</p>
+
+    <div class="confirm-actions">
+      <a class="btn btn--primary" href="{% url 'public:track' %}">Track your report</a>
+      <a class="btn btn--ghost" href="{% url 'public:landing' %}">Back to home</a>
+    </div>
+
+    <div class="confirm-next">
+      <h2>What happens next</h2>
+      <ol class="confirm-next__list">
+        <li><strong>A case handler reviews your report</strong> — usually within a few days.</li>
+        <li><strong>If you chose to be contacted, they may reach out</strong> to confirm details or offer support.</li>
+        <li><strong>Updates appear here</strong> — check anytime with your reference number and tracking code.</li>
+      </ol>
+    </div>
+
+    <p class="confirm-page__note">
+      Worried someone might see this page? Press <strong>Quick Exit</strong> above to leave this site immediately and remove it from your history.
+    </p>
+  </div>
+</section>
+{% endblock %}

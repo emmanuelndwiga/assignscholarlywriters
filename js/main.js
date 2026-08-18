@@ -1,40 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const navbar = document.querySelector('.navbar');
-  const hamburger = document.querySelector('.hamburger');
-  const mobileMenu = document.querySelector('.mobile-menu');
-
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
-  });
-
-  hamburger?.addEventListener('click', () => {
-    mobileMenu.classList.toggle('active');
-  });
-
-  document.querySelectorAll('.mobile-menu a').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu.classList.remove('active');
-    });
-  });
-
-  const navFaq = document.querySelector('.nav-faq');
-  const faqToggle = document.querySelector('.nav-faq-toggle');
-  if (faqToggle && navFaq) {
-    faqToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      navFaq.classList.toggle('open');
-    });
-    document.addEventListener('click', (e) => {
-      if (!navFaq.contains(e.target)) {
-        navFaq.classList.remove('open');
-      }
-    });
-  }
-
   const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'

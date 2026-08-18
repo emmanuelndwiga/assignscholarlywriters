@@ -5,7 +5,7 @@
   <div class="confirm-card reveal">
     <p class="eyebrow">Report received</p>
     <h1>Thank you for telling us.</h1>
-    <p class="confirm-page__sub">Your report is now with a trained case handler. Save the two details below somewhere safe — you'll need them to check on your report.</p>
+    <p class="confirm-page__sub">Your report is now with a trained case handler. Save the two details below — you'll need them to check on your report.</p>
 
     <div class="credential-box">
       <div class="credential">
@@ -21,8 +21,11 @@
     <p class="confirm-page__warn">Keep these together. You'll need both to view updates, and this page will not remember them for you.</p>
 
     <div class="confirm-actions">
-      <a class="btn btn--primary" href="{% url 'public:track' %}">Track your report</a>
-      <a class="btn btn--ghost" href="{% url 'public:landing' %}">Back to home</a>
+      <a class="btn--track" href="{% url 'public:track' %}">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd"/></svg>
+        Track your report
+      </a>
+      <a class="btn btn--outline" href="{% url 'public:landing' %}">Back to home</a>
     </div>
 
     <div class="confirm-next">

@@ -1,133 +1,315 @@
 {% extends "public/_base.html" %}
+{% load static %}
 {% block content %}
 
   <section class="hero">
-    <div class="hero__copy reveal">
-      <p class="eyebrow">A confidential space</p>
-      <h1>You don't have to <em>face this alone.</em></h1>
-      <p class="hero__sub">
-        Report online harassment, image-based abuse, stalking, or impersonation
-        — privately, and at your own pace. No account, no login, no pressure.
-      </p>
-      <div class="hero__actions">
-        <a href="{% url 'public:submit' %}" class="btn btn--primary">Report an incident</a>
-        <a href="{% url 'public:track' %}" class="btn btn--ghost">Track a report</a>
+    <div class="hero__bg" aria-hidden="true">
+      <div class="hero__bg-slide">
+        <img src="{% static 'images/hero-gbv.jpg' %}" alt="" class="hero__bg-image" loading="eager">
       </div>
-      <p class="hero__reassure">
-        Everything you share stays private. You choose what to include, and you
-        can stop at any time.
-      </p>
+      <div class="hero__bg-slide">
+        <img src="{% static 'images/support.jpg' %}" alt="" class="hero__bg-image" loading="eager">
+      </div>
+      <div class="hero__bg-slide">
+        <img src="{% static 'images/awareness.jpg' %}" alt="" class="hero__bg-image" loading="eager">
+      </div>
+      <div class="hero__bg-slide">
+        <img src="{% static 'images/report-gbv.jpg' %}" alt="" class="hero__bg-image" loading="eager">
+      </div>
     </div>
-
-    <div class="hero__art" aria-hidden="true">
-      <div class="hero__chip hero__chip--top">
-        <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.6"/></svg>
-        Anonymous by default
+    <div class="container hero__inner">
+      <div class="hero__copy reveal">
+        <p class="eyebrow">A confidential reporting platform</p>
+        <h1>You don't have to <em>face this alone.</em></h1>
+        <p class="hero__sub">
+          Report online harassment, image-based abuse, stalking, or impersonation
+          — privately, and at your own pace. No account, no login, no pressure.
+        </p>
+        <div class="hero__actions">
+          <a href="{% url 'public:submit' %}" class="btn btn--primary">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M10 2a1 1 0 011 1v5.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 8.586V3a1 1 0 011-1z"/><path d="M3 14a1 1 0 011 1v1a2 2 0 002 2h8a2 2 0 002-2v-1a1 1 0 112 0v1a4 4 0 01-4 4H6a4 4 0 01-4-4v-1a1 1 0 011-1z"/></svg>
+            Report an incident
+          </a>
+          <a href="{% url 'public:track' %}" class="btn--track">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd"/></svg>
+            Track a report
+          </a>
+        </div>
+        <div class="hero__trust-signals">
+          <div class="trust-signal">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/></svg>
+            <span>Encrypted &amp; anonymous</span>
+          </div>
+          <div class="trust-signal">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <span>No account required</span>
+          </div>
+          <div class="trust-signal">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+            <span>24/7 confidential</span>
+          </div>
+        </div>
       </div>
-      <div class="hero__chip hero__chip--bottom">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6"/></svg>
-        No login, no account
-      </div>
-      <svg viewBox="0 0 480 480" class="shelter-svg">
-        <defs>
-          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#5C8D76"/>
-            <stop offset="100%" stop-color="#1B3A4B"/>
-          </linearGradient>
-        </defs>
-        <circle class="drift drift--slow" cx="240" cy="240" r="190" fill="url(#g1)" opacity="0.12"/>
-        <path class="drift drift--med" d="M120,260 C120,150 200,90 260,110 C340,135 360,230 300,300 C245,365 120,370 120,260 Z" fill="#9C6B7A" opacity="0.18"/>
-        <path class="drift drift--fast" d="M200,90 C300,60 400,140 370,230 C345,300 250,320 200,270 C150,220 130,115 200,90 Z" fill="#5C8D76" opacity="0.22"/>
-        <circle cx="240" cy="240" r="70" fill="#F5F7F3" opacity="0.9"/>
-      </svg>
     </div>
   </section>
 
   <section id="how-it-works" class="how-it-works">
-    <p class="eyebrow eyebrow--center">How it works</p>
-    <h2 class="reveal">Three steps. Nothing more required of you.</h2>
-    <ol class="steps">
-      <li class="step reveal">
-        <span class="step__num">01</span>
-        <h3>Share what you're comfortable sharing</h3>
-        <p>Describe what happened in your own words. Add screenshots or links if you have them — or skip that entirely.</p>
-      </li>
-      <li class="step reveal">
-        <span class="step__num">02</span>
-        <h3>Get a reference number and code</h3>
-        <p>Save these two — they're the only way anyone, including us, can find your report again.</p>
-      </li>
-      <li class="step reveal">
-        <span class="step__num">03</span>
-        <h3>Check in whenever you're ready</h3>
-        <p>Return any time to see updates, or send a message to whoever is handling your case — no account needed.</p>
-      </li>
-    </ol>
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="eyebrow">How it works</p>
+        <h2>Three simple steps</h2>
+        <p class="section-sub">Nothing more required of you. Report at your own pace.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step__blob" aria-hidden="true"></div>
+          <div class="step__inner">
+            <div class="step__top">
+              <div class="step__image">
+                <img src="{% static 'images/step-report.jpg' %}" alt="Person privately using a laptop to make a secure report" loading="lazy" width="400" height="300">
+              </div>
+              <span class="step__number">01</span>
+            </div>
+            <div class="step__bottom">
+              <h3>Share what you're comfortable sharing</h3>
+              <p>Describe what happened in your own words. Add screenshots or links if you have them — or skip that entirely.</p>
+            </div>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step__blob step__blob--blue" aria-hidden="true"></div>
+          <div class="step__inner">
+            <div class="step__top">
+              <div class="step__image step__image--blue">
+                <img src="{% static 'images/step-support.jpg' %}" alt="Supportive conversation with a professional counselor" loading="lazy" width="400" height="300">
+              </div>
+              <span class="step__number step__number--blue">02</span>
+            </div>
+            <div class="step__bottom">
+              <h3>Get a reference number and code</h3>
+              <p>Save these two — they're the only way anyone, including us, can find your report again.</p>
+            </div>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step__blob step__blob--purple" aria-hidden="true"></div>
+          <div class="step__inner">
+            <div class="step__top">
+              <div class="step__image step__image--purple">
+                <img src="{% static 'images/step-track.jpg' %}" alt="Person checking case progress on their laptop" loading="lazy" width="400" height="300">
+              </div>
+              <span class="step__number step__number--purple">03</span>
+            </div>
+            <div class="step__bottom">
+              <h3>Check in whenever you're ready</h3>
+              <p>Return any time to see updates, or send a message to whoever is handling your case — no account needed.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section id="what-you-can-report" class="categories">
-    <p class="eyebrow eyebrow--center">What you can report</p>
-    <h2 class="reveal">If it happened to you online, it counts.</h2>
-    <div class="category-grid">
-      <div class="category-card reveal">
-        <div class="category-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M3 11l18-7v14L3 11z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 11l18-7v14L3 11z" stroke="currentColor" stroke-width="1.6" opacity="0.35"/><path d="M11 16v4m0 0H8m3 0h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <h3>Online harassment</h3><p>Threats, abuse, or repeated unwanted contact across platforms.</p>
+    <div class="container">
+      <div class="section-header section-header--center reveal">
+        <p class="eyebrow">What you can report</p>
+        <h2>If it happened to you online, it counts.</h2>
       </div>
-      <div class="category-card reveal">
-        <div class="category-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="9.5" r="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M21 16l-5-5-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3>Non-consensual image sharing</h3><p>Intimate images or videos shared, or threatened to be shared, without your consent.</p>
-      </div>
-      <div class="category-card reveal">
-        <div class="category-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12c2-4 5-6 10-6s8 2 10 6c-2 4-5 6-10 6s-8-2-10-6z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg></div>
-        <h3>Cyberstalking</h3><p>Being tracked, monitored, or repeatedly contacted against your will.</p>
-      </div>
-      <div class="category-card reveal">
-        <div class="category-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c1-3.5 4-5 7-5s6 1.5 7 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <h3>Impersonation</h3><p>Someone using your name, photos, or identity without your permission.</p>
-      </div>
-      <div class="category-card reveal">
-        <div class="category-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 2h8l4 4v16H6V2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 12h5m-5 4h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <h3>Doxxing</h3><p>Your private information exposed publicly to intimidate or endanger you.</p>
-      </div>
-      <div class="category-card reveal">
-        <div class="category-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.6"/></svg></div>
-        <h3>Sextortion</h3><p>Being threatened or coerced using intimate images or information.</p>
-      </div>
-      <div class="category-card category-card--other reveal">
-        <div class="category-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="6" r="2" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="6" r="2" stroke="currentColor" stroke-width="1.6"/><circle cx="6" cy="18" r="2" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="18" r="2" stroke="currentColor" stroke-width="1.6"/></svg></div>
-        <h3>Something else</h3><p>Not seeing it here doesn't mean it doesn't matter. Tell us in your own words.</p>
+      <div class="category-grid">
+        <div class="category-card reveal">
+          <div class="category-card__blob" aria-hidden="true"></div>
+          <div class="category-card__inner">
+            <div class="category-card__top">
+              <div class="category-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+              </div>
+              <svg class="category-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+            </div>
+            <div class="category-card__bottom">
+              <h3>Online harassment</h3>
+              <p>Threats, abuse, or repeated unwanted contact across platforms.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-card reveal">
+          <div class="category-card__blob category-card__blob--blue" aria-hidden="true"></div>
+          <div class="category-card__inner">
+            <div class="category-card__top">
+              <div class="category-card__icon category-card__icon--blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z"/></svg>
+              </div>
+              <svg class="category-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+            </div>
+            <div class="category-card__bottom">
+              <h3>Non-consensual image sharing</h3>
+              <p>Intimate images or videos shared, or threatened to be shared, without your consent.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-card reveal">
+          <div class="category-card__blob category-card__blob--purple" aria-hidden="true"></div>
+          <div class="category-card__inner">
+            <div class="category-card__top">
+              <div class="category-card__icon category-card__icon--purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+              </div>
+              <svg class="category-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+            </div>
+            <div class="category-card__bottom">
+              <h3>Cyberstalking</h3>
+              <p>Being tracked, monitored, or repeatedly contacted against your will.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-card reveal">
+          <div class="category-card__blob category-card__blob--teal" aria-hidden="true"></div>
+          <div class="category-card__inner">
+            <div class="category-card__top">
+              <div class="category-card__icon category-card__icon--teal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+              </div>
+              <svg class="category-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+            </div>
+            <div class="category-card__bottom">
+              <h3>Impersonation</h3>
+              <p>Someone using your name, photos, or identity without your permission.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-card reveal">
+          <div class="category-card__blob category-card__blob--amber" aria-hidden="true"></div>
+          <div class="category-card__inner">
+            <div class="category-card__top">
+              <div class="category-card__icon category-card__icon--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              </div>
+              <svg class="category-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+            </div>
+            <div class="category-card__bottom">
+              <h3>Doxxing</h3>
+              <p>Your private information exposed publicly to intimidate or endanger you.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-card reveal">
+          <div class="category-card__blob category-card__blob--rose" aria-hidden="true"></div>
+          <div class="category-card__inner">
+            <div class="category-card__top">
+              <div class="category-card__icon category-card__icon--rose">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+              </div>
+              <svg class="category-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+            </div>
+            <div class="category-card__bottom">
+              <h3>Sextortion</h3>
+              <p>Being threatened or coerced using intimate images or information.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-card category-card--cta reveal">
+          <div class="category-card__inner">
+            <div class="category-card__top">
+              <div class="category-card__icon category-card__icon--cta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <svg class="category-card__arrow category-card__arrow--cta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+            </div>
+            <div class="category-card__bottom">
+              <h3>Something else</h3>
+              <p>Not seeing it here doesn't mean it doesn't matter. Tell us in your own words.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <section id="your-safety" class="trust">
-    <p class="eyebrow eyebrow--center">Built around your safety</p>
-    <h2 class="reveal">Nothing here asks more of you than you're ready to give.</h2>
-    <div class="trust-grid">
-      <div class="trust-item reveal">
-        <div class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6"/></svg></div>
-        <h3>No account required</h3><p>You never have to register, sign in, or hand over an identity to be heard.</p>
+    <div class="container">
+      <div class="section-header section-header--center reveal">
+        <p class="eyebrow eyebrow--light">Built around your safety</p>
+        <h2>Nothing here asks more of you than you're ready to give.</h2>
       </div>
-      <div class="trust-item reveal">
-        <div class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12c2-4 5-6 8-6s6 2 8 6c-2 4-5 6-8 6s-6-2-8-6z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg></div>
-        <h3>Anonymous by default</h3><p>You choose whether to leave any contact details at all. Fully anonymous is always valid.</p>
+      <div class="trust-grid">
+        <div class="trust-item reveal">
+          <div class="trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+          </div>
+          <h3>No account required</h3>
+          <p>You never have to register, sign in, or hand over an identity to be heard.</p>
+        </div>
+        <div class="trust-item reveal">
+          <div class="trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+          </div>
+          <h3>Anonymous by default</h3>
+          <p>You choose whether to leave any contact details at all. Fully anonymous is always valid.</p>
+        </div>
+        <div class="trust-item reveal">
+          <div class="trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+          </div>
+          <h3>Kept confidential</h3>
+          <p>Only the person handling your case can see the details — never made public.</p>
+        </div>
+        <div class="trust-item reveal">
+          <div class="trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>
+          </div>
+          <h3>Leave any time</h3>
+          <p>The Quick Exit button clears this site from your browser history in one click.</p>
+        </div>
       </div>
-      <div class="trust-item reveal">
-        <div class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="10" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.6"/></svg></div>
-        <h3>Kept confidential</h3><p>Only the person handling your case can see the details — never made public.</p>
+    </div>
+  </section>
+
+  <section class="about-section">
+    <div class="container">
+      <div class="about-grid reveal">
+        <div class="about-image">
+          <img src="{% static 'images/about-safereport.jpg' %}" alt="About Amani platform" loading="lazy" width="480" height="360">
+        </div>
+        <div class="about-content">
+          <p class="eyebrow">About Amani</p>
+          <h2>A safe space for those who need it most</h2>
+          <p>Amani was built to give survivors a confidential, judgment-free way to report online gender-based violence. Every feature is designed around your safety and privacy.</p>
+        </div>
       </div>
-      <div class="trust-item reveal">
-        <div class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5l4 16 3-7 3 7 4-16" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
-        <h3>Leave any time</h3><p>The Quick Exit button clears this site from your browser history in one click.</p>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-card reveal">
+        <div class="cta-card__content">
+          <h2>Ready to take the next step?</h2>
+          <p>You're in control. Submit a report, or check the status of one you've already filed.</p>
+          <div class="cta-card__actions">
+            <a href="{% url 'public:submit' %}" class="btn btn--primary">Report an incident</a>
+            <a href="{% url 'public:track' %}" class="btn--track btn--track-light">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd"/></svg>
+              Track a report
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="exit-explainer">
-    <div class="exit-explainer__inner reveal">
-      <h2>About the Quick Exit button</h2>
-      <p>Pressing <strong>Quick Exit</strong> — or the <kbd>Esc</kbd> key, three times, at any point — immediately takes you to a neutral page and replaces this site in your browser history, so selecting "back" won't bring anyone here.</p>
-      <p class="exit-explainer__tip">For more privacy: use a private/incognito window, and clear your browser history when you're done.</p>
+    <div class="container">
+      <div class="exit-explainer__inner reveal">
+        <h2>About the Quick Exit button</h2>
+        <p>Press <strong>Quick Exit</strong> or tap <kbd>Esc</kbd> three times to leave immediately. This page is removed from your browser history so pressing "back" won't return here.</p>
+        <p class="exit-explainer__tip">For more privacy, use a private/incognito window.</p>
+      </div>
     </div>
   </section>
 

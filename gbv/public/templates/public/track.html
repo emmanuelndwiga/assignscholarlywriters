@@ -11,7 +11,7 @@
   <form method="post" class="report-form reveal">
     {% csrf_token %}
     {% if error %}
-      <div class="form-alert">{{ error }}</div>
+      <div class="form-alert" role="alert">{{ error }}</div>
     {% endif %}
     <div class="field">
       <label for="{{ form.reference_number.id_for_label }}">Reference number</label>

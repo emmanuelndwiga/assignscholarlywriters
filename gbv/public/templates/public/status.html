@@ -2,6 +2,12 @@
 {% block title %}Your report status — Amani{% endblock %}
 {% block content %}
 <section class="status-page">
+  <div class="status-nav reveal">
+    <a href="{% url 'public:landing' %}" class="btn btn--outline btn--small">
+      <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
+      Back to home
+    </a>
+  </div>
   <div class="status-card reveal">
     <p class="eyebrow">Report {{ case.reference_number }}</p>
     <h1>{{ case.get_status_display }}</h1>
@@ -114,24 +120,29 @@
         alert("Notifications aren't supported on this browser.");
         return;
       }
-      const registration = await navigator.serviceWorker.register("{% url 'public:service_worker' %}");
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") return;
+      try {
+        const registration = await navigator.serviceWorker.register("{% url 'public:service_worker' %}");
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") return;
 
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-      });
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        });
 
-      await fetch("{% url 'public:push_subscribe' %}", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reference_number: referenceNumber,
-          tracking_code: trackingCode,
-          subscription: subscription.toJSON(),
-        }),
-      });
+        await fetch("{% url 'public:push_subscribe' %}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reference_number: referenceNumber,
+            tracking_code: trackingCode,
+            subscription: subscription.toJSON(),
+          }),
+        });
+      } catch (err) {
+        console.error("Push subscription failed:", err);
+        alert("Failed to enable notifications. Please try again or check your browser settings.");
+      }
     });
   }
 </script>

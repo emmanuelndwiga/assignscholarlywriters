@@ -11,7 +11,7 @@
   <form method="post" enctype="multipart/form-data" class="report-form reveal">
     {% csrf_token %}
     {% if form.non_field_errors %}
-      <div class="form-alert">{{ form.non_field_errors }}</div>
+      <div class="form-alert" role="alert">{{ form.non_field_errors }}</div>
     {% endif %}
 
     <fieldset class="form-section">

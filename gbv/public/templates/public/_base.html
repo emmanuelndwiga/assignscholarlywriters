@@ -4,9 +4,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/icon.svg' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/icon.svg' %}">
+  <meta name="theme-color" content="#D71920">
+  <meta name="description" content="Amani — A confidential platform to report online harassment, image-based abuse, stalking, and impersonation. Anonymous, secure, and free.">
+  <meta name="keywords" content="GBV reporting, online harassment, image-based abuse, cyberstalking, sextortion, anonymous reporting, safe space">
+  <meta name="author" content="Amani">
+  <meta property="og:title" content="Amani — A confidential space to report online harassment">
+  <meta property="og:description" content="Report online harassment, image-based abuse, stalking, or impersonation — privately, and at your own pace. No account, no login, no pressure.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{% static 'images/hero-gbv.jpg' %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Amani — A confidential space to report online harassment">
+  <meta name="twitter:description" content="Report online harassment, image-based abuse, stalking, or impersonation — privately, and at your own pace.">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Amani",
+    "description": "A confidential platform to report online harassment, image-based abuse, stalking, and impersonation. Anonymous, secure, and free.",
+    "url": "{{ request.build_absolute_uri }}",
+    "applicationCategory": "SafetyApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Anonymous GBV reporting",
+      "Confidential case tracking",
+      "Secure communication with case handlers",
+      "Quick Exit safety feature"
+    ]
+  }
+  </script>
   <title>{% block title %}Amani — A confidential space{% endblock %}</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("theme");
+      if (saved === "dark" || saved === "light") {
+        document.documentElement.setAttribute("data-theme", saved);
+      } else {
+        var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+      }
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/landing.css' %}">
   <link rel="stylesheet" href="{% static 'css/forms.css' %}">
   {% block extra_css %}{% endblock %}
@@ -15,44 +63,94 @@
 
   <div class="safety-strip">
     <span>If you are in immediate danger, contact local emergency services or a trusted person near you.</span>
-    <button class="quick-exit quick-exit--strip" data-quick-exit>Quick Exit</button>
+    <button class="quick-exit quick-exit--strip" data-quick-exit>
+      <span class="quick-exit__star">&#10022;</span> Quick Exit
+    </button>
   </div>
 
-  <header class="site-header">
-    <a href="{% url 'public:landing' %}" class="brand">Amani</a>
-    <nav class="main-nav" aria-label="Primary">
+  <header class="site-header" role="banner">
+    <a href="{% url 'public:landing' %}" class="brand" aria-label="Amani Home">Amani</a>
+    <nav class="main-nav" aria-label="Primary navigation">
       <a href="{% url 'public:landing' %}#how-it-works">How it works</a>
       <a href="{% url 'public:landing' %}#what-you-can-report">What you can report</a>
-      <a href="{% url 'public:track' %}" class="nav-track">Track a report</a>
+      <a href="{% url 'public:track' %}" class="btn--track nav-track">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd"/></svg>
+        Track a report
+      </a>
     </nav>
-    <button class="quick-exit quick-exit--header" data-quick-exit>
-      <span class="quick-exit__dot"></span> Quick Exit
-    </button>
+    <div class="header-actions">
+      <div class="theme-switcher" role="radiogroup" aria-label="Theme preference">
+        <button class="theme-switcher__btn" data-theme-toggle="dark" role="radio" aria-checked="false" aria-label="Dark theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+        <button class="theme-switcher__btn" data-theme-toggle="light" role="radio" aria-checked="false" aria-label="Light theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button class="theme-switcher__btn" data-theme-toggle="system" role="radio" aria-checked="false" aria-label="System theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </button>
+      </div>
+      <button class="quick-exit quick-exit--header" data-quick-exit aria-label="Quick Exit — leave this site immediately">
+        <span class="quick-exit__star">&#10022;</span> Quick Exit <span class="quick-exit__dots"></span>
+      </button>
+    </div>
   </header>
 
-  <main>
+  <main role="main">
     {% if messages %}
       <div class="page-messages">
         {% for message in messages %}
-          <p class="msg msg--{{ message.tags }}">{{ message }}</p>
+          <p class="msg msg--{{ message.tags }}" role="alert">{{ message }}</p>
         {% endfor %}
       </div>
     {% endif %}
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-top">
-      <span class="brand brand--footer">Amani</span>
-      <button class="quick-exit quick-exit--footer" data-quick-exit>Quick Exit</button>
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-top">
+        <span class="brand brand--footer">Amani</span>
+        <div class="footer-actions">
+          <div class="theme-switcher theme-switcher--footer" role="radiogroup" aria-label="Theme preference">
+            <button class="theme-switcher__btn" data-theme-toggle="dark" role="radio" aria-checked="false" aria-label="Dark theme">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            </button>
+            <button class="theme-switcher__btn" data-theme-toggle="light" role="radio" aria-checked="false" aria-label="Light theme">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+            <button class="theme-switcher__btn" data-theme-toggle="system" role="radio" aria-checked="false" aria-label="System theme">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </button>
+          </div>
+          <button class="quick-exit quick-exit--footer" data-quick-exit>
+            <span class="quick-exit__star">&#10022;</span> Quick Exit
+          </button>
+        </div>
+      </div>
+      <p class="footer-note">This is a safe, judgment-free space. Whatever pace you need is the right one.</p>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="{% url 'public:submit' %}">Report an incident</a>
+        <a href="{% url 'public:track' %}" class="btn--track nav-track" style="padding:0.3rem 0.8rem;font-size:0.8125rem;">Track a report</a>
+        <a href="{% url 'accounts:login' %}">Staff login</a>
+      </nav>
     </div>
-    <p class="footer-note">This is a safe, judgment-free space. Whatever pace you need is the right one.</p>
-    <nav class="footer-links" aria-label="Footer">
-      <a href="{% url 'public:submit' %}">Report an incident</a>
-      <a href="{% url 'public:track' %}">Track a report</a>
-      <a href="{% url 'accounts:login' %}">Staff login</a>
-    </nav>
   </footer>
+
+  <!-- Quick Exit Confirmation Modal -->
+  <div class="qe-overlay" id="qe-overlay" role="dialog" aria-modal="true" aria-labelledby="qe-title" hidden>
+    <div class="qe-modal">
+      <div class="qe-modal__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="32" height="32"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+      </div>
+      <h2 class="qe-modal__title" id="qe-title">Leave this site?</h2>
+      <p class="qe-modal__body">You'll be taken to Google and this page will be removed from your history.</p>
+      <div class="qe-modal__actions">
+        <button class="qe-modal__btn qe-modal__btn--stay" id="qe-stay" type="button">Stay here</button>
+        <button class="qe-modal__btn qe-modal__btn--leave" id="qe-leave" type="button">Leave now</button>
+      </div>
+    </div>
+  </div>
 
   <script src="{% static 'js/landing.js' %}"></script>
   {% block extra_js %}{% endblock %}

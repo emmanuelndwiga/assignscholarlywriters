@@ -226,7 +226,7 @@ img {
   justify-content: space-between;
   height: 72px;
   gap: 16px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .header-logo {
@@ -237,6 +237,7 @@ img {
   font-weight: 700;
   color: var(--slate);
   flex-shrink: 0;
+  text-decoration: none;
 }
 
 .header-logo-icon {
@@ -446,6 +447,8 @@ img {
   font-size: 0.88rem;
   padding: 10px;
   text-align: center;
+  background: var(--green);
+  color: var(--white);
 }
 
 .faq-dropdown::-webkit-scrollbar {
@@ -588,16 +591,29 @@ img {
 }
 
 .hero-content h1 {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 800;
   color: var(--white);
   margin-bottom: 20px;
   letter-spacing: -0.02em;
+  line-height: 1.2;
   min-width: 0;
 }
 
 .hero-content h1 .green {
   color: var(--green);
+}
+
+.hero-text-hover {
+  display: inline-block;
+  transition: color 0.3s ease, transform 0.3s ease, letter-spacing 0.3s ease;
+  cursor: default;
+}
+
+.hero-text-hover:hover {
+  color: var(--green-light);
+  transform: translateY(-2px);
+  letter-spacing: 0.02em;
 }
 
 .hero-content p {
@@ -866,6 +882,251 @@ img {
   padding: 9px 22px;
 }
 
+/* Service Features List */
+.service-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px 0;
+}
+
+.service-features li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  color: var(--gray-light);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.service-features li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  color: var(--green);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+/* Discipline Dropdowns */
+.discipline-dropdown {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease;
+}
+
+.discipline-dropdown:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.discipline-item summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--slate);
+  transition: background 0.2s ease;
+}
+
+.discipline-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.discipline-item summary:hover {
+  background: var(--neutral);
+}
+
+.discipline-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--green);
+  color: var(--white);
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.discipline-name {
+  flex: 1;
+}
+
+.discipline-toggle {
+  font-size: 1.3rem;
+  color: var(--green);
+  font-weight: 700;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.discipline-item[open] .discipline-toggle {
+  transform: rotate(45deg);
+}
+
+.discipline-content {
+  padding: 0 24px 24px;
+}
+
+.discipline-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.discipline-tag {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--neutral);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--gray);
+  transition: all 0.2s ease;
+}
+
+.discipline-tag:hover {
+  background: var(--green);
+  color: var(--white);
+  border-color: var(--green);
+}
+
+/* Specialized Disciplines Grid */
+.specialized-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.specialized-card {
+  background: var(--neutral);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.specialized-card h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--slate);
+  margin-bottom: 8px;
+}
+
+.specialized-card p {
+  font-size: 0.85rem;
+  color: var(--gray-light);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* University-Specific Cards */
+.university-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.university-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.university-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+  border-color: var(--green);
+}
+
+.uni-card-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.uni-card-logo img {
+  max-width: 120px;
+  max-height: 56px;
+  object-fit: contain;
+  filter: grayscale(20%);
+  transition: all 0.25s ease;
+}
+
+.university-card:hover .uni-card-logo img {
+  filter: grayscale(0%);
+  transform: scale(1.05);
+}
+
+.university-card h4 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--slate);
+  margin-bottom: 4px;
+}
+
+.university-card p {
+  font-size: 0.82rem;
+  color: var(--gray-light);
+  margin: 0;
+}
+
+/* Responsive additions */
+@media (max-width: 1024px) {
+  .specialized-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .university-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .services-grid--3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .specialized-grid {
+    grid-template-columns: 1fr;
+  }
+  .university-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .services-grid--3 {
+    grid-template-columns: 1fr;
+  }
+  .discipline-item summary {
+    padding: 14px 16px;
+    font-size: 0.95rem;
+  }
+  .discipline-num {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+  .discipline-content {
+    padding: 0 16px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .university-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Pricing */
 .pricing-grid {
   display: grid;
@@ -890,7 +1151,7 @@ img {
 }
 
 .pricing-card-header {
-  background: var(--slate);
+  background: var(--green);
   padding: 28px 28px 24px;
   text-align: center;
   position: relative;
@@ -905,7 +1166,7 @@ img {
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--white);
+  background: var(--green-bg);
   color: var(--green);
   padding: 4px 16px;
   font-size: 0.75rem;
@@ -1003,7 +1264,7 @@ img {
 }
 
 .about-image {
-  background: var(--neutral);
+  background: var(--green-bg);
   border-radius: var(--radius);
   height: 380px;
   display: flex;
@@ -1011,7 +1272,7 @@ img {
   justify-content: center;
   font-size: 4rem;
   color: var(--green);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(0, 166, 81, 0.2);
 }
 
 .team-grid {
@@ -1037,13 +1298,13 @@ img {
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  background: var(--slate);
+  background: var(--green);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--green);
+  color: var(--white);
   margin: 0 auto 16px;
 }
 
@@ -1203,7 +1464,7 @@ img {
 }
 
 .info-card:hover {
-  border-color: var(--green);
+  border-color: var(--border);
 }
 
 .info-icon {
@@ -1254,6 +1515,7 @@ img {
 
 .footer-brand .header-logo-icon {
   background: var(--green);
+  color: var(--white);
 }
 
 .footer-brand p {
@@ -1477,7 +1739,7 @@ img {
   .site-header .container {
     flex-direction: column;
     height: auto;
-    padding: 12px 24px;
+    padding: 12px 16px;
     gap: 12px;
   }
 
@@ -1507,8 +1769,32 @@ img {
     font-size: 1.8rem;
   }
 
+  .section-subtitle {
+    font-size: 0.95rem;
+  }
+
   .page-hero h1 {
     font-size: 2rem;
+  }
+
+  .page-hero p {
+    font-size: 0.95rem;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .section {
+    padding: 48px 0;
+  }
+
+  .page-hero {
+    padding: 80px 0 36px;
+  }
+
+  .cta-section {
+    padding: 48px 0;
   }
 
   .features-grid,
@@ -1520,11 +1806,15 @@ img {
   }
 
   .team-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .footer-grid {
     grid-template-columns: 1fr;
+  }
+
+  .footer {
+    padding: 36px 0 20px;
   }
 
   .footer-bottom {
@@ -1537,5 +1827,62 @@ img {
     flex-direction: column;
     gap: 20px;
     align-items: center;
+  }
+
+  .hero-stat h3 {
+    font-size: 1.5rem;
+  }
+
+  .pricing-card .price {
+    font-size: 2.2rem;
+  }
+
+  .faq-dropdown {
+    width: calc(100vw - 48px);
+    right: -8px;
+  }
+
+  .contact-form {
+    padding: 24px;
+  }
+
+  .header-right {
+    margin-top: 0;
+  }
+
+  .header-wa {
+    white-space: normal;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-hero h1 {
+    font-size: 1.65rem;
+  }
+
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .pricing-card .price {
+    font-size: 1.9rem;
+  }
+
+  .service-card {
+    padding: 24px 20px;
+  }
+
+  .university-card {
+    padding: 18px;
+  }
+
+  .faq-dropdown {
+    width: calc(100vw - 32px);
   }
 }

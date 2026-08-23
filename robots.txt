@@ -1,0 +1,8 @@
+# ScholarlyWriters - robots.txt
+# https://www.scholarlywriters.com
+
+User-agent: *
+Allow: /
+Disallow: /backend/
+
+Sitemap: https://www.scholarlywriters.com/sitemap.xml

@@ -15,6 +15,7 @@ logs/
 *.log
 .env
 local_settings.py
+staticfiles/
 
 # OS
 .DS_Store

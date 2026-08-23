@@ -1,8 +1,8 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from currencies.services import fetch_exchange_rates
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,6 +14,8 @@ urlpatterns = [
     path('api/customers/', include('customers.urls')),
     path('api/samples/', include('samples.urls')),
     path('api/contact/', include('contact.urls')),
+    # Root redirects to index.html (served by WhiteNoise)
+    re_path(r'^$', RedirectView.as_view(url='/index.html', permanent=False)),
 ]
 
 if settings.DEBUG:

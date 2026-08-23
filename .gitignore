@@ -12,3 +12,10 @@ staticfiles/
 # Local secrets & generated keys
 .env
 .vapid_keys.json
+
+# ScholarlyWriters - large files
+assignscholarlywriters/samples/docs/*.docx
+assignscholarlywriters/samples/docs/*.pdf
+assignscholarlywriters/backend/.env
+assignscholarlywriters/backend/db.sqlite3
+assignscholarlywriters/backend/media/

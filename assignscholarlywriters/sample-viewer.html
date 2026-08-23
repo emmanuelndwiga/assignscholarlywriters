@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+  <title>View Sample | ScholarlyWriters</title>
+  <meta name="description" content="View and download academic writing samples from ScholarlyWriters.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+  <style>
+    .viewer-page { background: var(--off-white); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .viewer-toolbar {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .viewer-toolbar-left { display: flex; align-items: center; gap: 16px; }
+    .viewer-toolbar-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 400px;
+    }
+    .viewer-toolbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .btn-viewer {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-viewer svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .btn-viewer-download { background: var(--green); color: #fff; }
+    .btn-viewer-download:hover { background: #173C21; }
+    .btn-viewer-back { background: transparent; color: var(--text-secondary); border: 1px solid #ddd; }
+    .btn-viewer-back:hover { background: #f5f5f5; color: var(--charcoal); }
+
+    .viewer-frame-wrap {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 0;
+      background: #e8e8e8;
+      overflow: auto;
+    }
+
+    #docx-render {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 40px 60px;
+      min-height: calc(100vh - 56px);
+      box-sizing: border-box;
+      line-height: 1.7;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 12pt;
+      color: #222;
+    }
+    #docx-render h1 { font-size: 18pt; margin: 0 0 12pt; }
+    #docx-render h2 { font-size: 14pt; margin: 18pt 0 8pt; }
+    #docx-render h3 { font-size: 12pt; margin: 14pt 0 6pt; }
+    #docx-render p { margin: 0 0 8pt; text-align: justify; }
+    #docx-render table { border-collapse: collapse; margin: 10pt 0; width: 100%; }
+    #docx-render table td, #docx-render table th { border: 1px solid #999; padding: 4pt 8pt; font-size: 11pt; }
+    #docx-render img { max-width: 100%; }
+
+    #pdf-render { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 0; width: 100%; }
+    #pdf-render canvas { box-shadow: 0 2px 12px rgba(0,0,0,0.1); margin-bottom: 8px; max-width: 100%; }
+
+    .viewer-loading {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--text-secondary);
+    }
+    .viewer-spinner {
+      width: 40px; height: 40px;
+      border: 3px solid #e0e0e0;
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .viewer-error {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; color: var(--text-secondary); padding: 40px; text-align: center;
+    }
+    .viewer-error h2 { color: var(--charcoal); font-size: 1.3rem; }
+
+    .viewer-meta {
+      background: #fff;
+      border-top: 1px solid #e0e0e0;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .viewer-meta-item {
+      font-size: 0.82rem; color: var(--text-secondary);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .viewer-meta-item strong { color: var(--charcoal); font-weight: 600; }
+
+    @media (max-width: 768px) {
+      .viewer-toolbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+      .viewer-toolbar-title { max-width: 100%; font-size: 0.9rem; }
+      .viewer-toolbar-right { width: 100%; justify-content: flex-end; }
+      .viewer-meta { padding: 12px 16px; gap: 12px; }
+      #docx-render { padding: 20px 24px; }
+    }
+  </style>
+</head>
+<body class="viewer-page">
+  <div class="viewer-toolbar">
+    <div class="viewer-toolbar-left">
+      <a href="samples.html" class="btn-viewer btn-viewer-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        Back to Samples
+      </a>
+      <span class="viewer-toolbar-title" id="viewer-title">Loading...</span>
+    </div>
+    <div class="viewer-toolbar-right">
+      <a class="btn-viewer btn-viewer-download" id="viewer-download" href="#" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </a>
+    </div>
+  </div>
+
+  <div class="viewer-frame-wrap" id="viewer-container">
+    <div class="viewer-loading" id="viewer-loading">
+      <div class="viewer-spinner"></div>
+      <p>Loading document preview...</p>
+    </div>
+  </div>
+
+  <div class="viewer-meta" id="viewer-meta" style="display:none;">
+    <div class="viewer-meta-item"><strong>Subject:</strong> <span id="meta-subject"></span></div>
+    <div class="viewer-meta-item"><strong>Level:</strong> <span id="meta-level"></span></div>
+    <div class="viewer-meta-item"><strong>Pages:</strong> <span id="meta-pages"></span></div>
+    <div class="viewer-meta-item"><strong>Format:</strong> <span id="meta-format"></span></div>
+    <div class="viewer-meta-item"><strong>File:</strong> <span id="meta-file"></span></div>
+  </div>
+
+  <script>
+    (async function() {
+      var API_BASE = 'http://127.0.0.1:8000';
+      var params = new URLSearchParams(window.location.search);
+      var sampleId = params.get('id');
+      var src = params.get('src');
+      var container = document.getElementById('viewer-container');
+      var loading = document.getElementById('viewer-loading');
+      var titleEl = document.getElementById('viewer-title');
+      var downloadBtn = document.getElementById('viewer-download');
+      var metaBar = document.getElementById('viewer-meta');
+
+      function showError(msg) {
+        container.innerHTML = '<div class="viewer-error"><h2>' + msg + '</h2><p>Please go back and try again.</p><a href="samples.html" class="btn btn-green">Browse Samples</a></div>';
+      }
+
+      if (!sampleId) { showError('No sample specified'); return; }
+
+      var sample = null;
+
+      if (src === 'api') {
+        try {
+          var apiResp = await fetch(API_BASE + '/api/samples/' + sampleId + '/');
+          if (apiResp.ok) {
+            var d = await apiResp.json();
+            sample = { title: d.title, subject: d.subject, level: d.level, pages: d.pages, format: d.format, filename: d.filename, file_url: d.file_url, description: d.description };
+          }
+        } catch (e) {}
+      }
+
+      if (!sample) {
+        try {
+          var jsonResp = await fetch('samples/data.json');
+          var samples = await jsonResp.json();
+          sample = samples.find(function(s) { return s.id == sampleId; });
+        } catch (e) {}
+      }
+
+      if (!sample) { showError('Sample not found'); return; }
+
+      document.title = sample.title + ' | ScholarlyWriters';
+      titleEl.textContent = sample.title;
+
+      var downloadUrl = sample.file_url || ('samples/docs/' + sample.filename);
+      downloadBtn.href = downloadUrl;
+      downloadBtn.download = sample.filename;
+
+      document.getElementById('meta-subject').textContent = sample.subject;
+      document.getElementById('meta-level').textContent = sample.level;
+      document.getElementById('meta-pages').textContent = sample.pages;
+      document.getElementById('meta-format').textContent = sample.format;
+      document.getElementById('meta-file').textContent = sample.filename;
+      metaBar.style.display = 'flex';
+
+      var ext = sample.filename.split('.').pop().toLowerCase();
+
+      try {
+        var response = await fetch(downloadUrl);
+        if (!response.ok) throw new Error('File not found');
+        var blob = await response.blob();
+      } catch (e) {
+        showError('Could not load the file');
+        return;
+      }
+
+      loading.remove();
+
+      if (ext === 'pdf') {
+        renderPdf(blob);
+      } else if (ext === 'docx') {
+        renderDocx(blob);
+      } else {
+        showError('Unsupported file type');
+      }
+
+      async function renderPdf(blob) {
+        var pdfDiv = document.createElement('div');
+        pdfDiv.id = 'pdf-render';
+        container.appendChild(pdfDiv);
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        var arrayBuffer = await blob.arrayBuffer();
+        var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+        for (var i = 1; i <= pdf.numPages; i++) {
+          var page = await pdf.getPage(i);
+          var scale = 1.5;
+          var viewport = page.getViewport({ scale: scale });
+          var canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          var ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          pdfDiv.appendChild(canvas);
+        }
+      }
+
+      async function renderDocx(blob) {
+        var arrayBuffer = await blob.arrayBuffer();
+        var result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+        var docDiv = document.createElement('div');
+        docDiv.id = 'docx-render';
+        docDiv.innerHTML = result.value || '<p>This document appears to be empty.</p>';
+        container.appendChild(docDiv);
+
+        if (result.messages && result.messages.length > 0) {
+          console.log('Mammoth messages:', result.messages);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

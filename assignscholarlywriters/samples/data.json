@@ -1,0 +1,145 @@
+[
+  {
+    "id": "sample-1",
+    "title": "Disability and Employment in China",
+    "subject": "Sociology",
+    "level": "PhD",
+    "pages": 45,
+    "format": "APA",
+    "filename": "Disability and Employment in China - Cardiff Dissertation (Chapters 1-6 + Appendices).docx",
+    "description": "A comprehensive doctoral dissertation examining disability employment practices in China, covering policy analysis, workplace inclusion, and societal attitudes across six chapters with supporting appendices.",
+    "category": "dissertation"
+  },
+  {
+    "id": "sample-2",
+    "title": "Human Resource Management Strategies for SME Project Success",
+    "subject": "Business",
+    "level": "Master's",
+    "pages": 25,
+    "format": "APA",
+    "filename": "Human_Resource_Management_Strategies_for_SME_Project_Success.docx",
+    "description": "An analysis of HR management strategies that drive successful project delivery in small and medium enterprises, including talent acquisition, team development, and performance optimization.",
+    "category": "research"
+  },
+  {
+    "id": "sample-3",
+    "title": "Individual Assessment: Reflective Entries",
+    "subject": "Education",
+    "level": "Undergraduate",
+    "pages": 10,
+    "format": "APA",
+    "filename": "IB2B10-Reflective-Entries.docx",
+    "description": "Reflective assessment entries demonstrating critical self-evaluation of learning experiences, professional development, and academic growth throughout the course.",
+    "category": "essay"
+  },
+  {
+    "id": "sample-4",
+    "title": "Network Security Proposal for UMUC",
+    "subject": "Cybersecurity",
+    "level": "Master's",
+    "pages": 14,
+    "format": "APA",
+    "filename": "Network-Security-Proposal-UMUC.docx",
+    "description": "A detailed network security proposal covering threat assessment, security architecture design, implementation roadmap, and risk mitigation strategies for enterprise environments.",
+    "category": "research"
+  },
+  {
+    "id": "sample-5",
+    "title": "Nurses' Perceptions Regarding Supportive Care in the NICU",
+    "subject": "Nursing",
+    "level": "Master's",
+    "pages": 30,
+    "format": "APA",
+    "filename": "Nurses_Perceptions_Regarding_Supportive_Care_in_the_NICU.docx",
+    "description": "A qualitative study exploring nurses' perceptions and experiences of providing supportive care in neonatal intensive care units, examining emotional labour and coping strategies.",
+    "category": "research"
+  },
+  {
+    "id": "sample-6",
+    "title": "Packet Analyzers: Network Traffic Analysis",
+    "subject": "Information Technology",
+    "level": "Undergraduate",
+    "pages": 8,
+    "format": "Chicago",
+    "filename": "Packet-Analyzers-Chicago.docx",
+    "description": "An analysis of packet analyzer tools and techniques for network traffic monitoring, protocol analysis, and troubleshooting in modern network infrastructures.",
+    "category": "research"
+  },
+  {
+    "id": "sample-7",
+    "title": "Big Data and People Analytics",
+    "subject": "Business Analytics",
+    "level": "Master's",
+    "pages": 20,
+    "format": "APA",
+    "filename": "RE556-Big-Data-People-Analytics.docx",
+    "description": "Exploring the application of big data analytics in human resource management, including workforce planning, talent acquisition, and employee performance optimization.",
+    "category": "research"
+  },
+  {
+    "id": "sample-8",
+    "title": "SDLC Website Migration Project",
+    "subject": "Information Technology",
+    "level": "Master's",
+    "pages": 12,
+    "format": "APA",
+    "filename": "SDLC-Website-Migration-Project.docx",
+    "description": "A systems development lifecycle approach to website migration, covering planning, analysis, design, implementation, and maintenance phases.",
+    "category": "case-study"
+  },
+  {
+    "id": "sample-9",
+    "title": "Sexual Quality of Life in SGMW After Cancer",
+    "subject": "Health Sciences",
+    "level": "PhD",
+    "pages": 40,
+    "format": "APA",
+    "filename": "Sexual Quality of Life in SGMW After Cancer (Chapter 1 Onward).docx",
+    "description": "A doctoral study examining sexual quality of life among sexual and gender minority women following cancer treatment, from theoretical frameworks through methodology and findings.",
+    "category": "dissertation"
+  },
+  {
+    "id": "sample-10",
+    "title": "Structured Data Collection Using APA 7th Edition",
+    "subject": "Research Methods",
+    "level": "Undergraduate",
+    "pages": 10,
+    "format": "APA",
+    "filename": "Structured-Data-Collection-APA7.docx",
+    "description": "A methodological guide to structured data collection following APA 7th edition standards, including survey design, sampling strategies, and data management procedures.",
+    "category": "essay"
+  },
+  {
+    "id": "sample-11",
+    "title": "Telecommunications Leadership and HR Innovation",
+    "subject": "Business",
+    "level": "Master's",
+    "pages": 14,
+    "format": "Harvard",
+    "filename": "Telecoms-Leadership-HR-Innovation.docx",
+    "description": "An analysis of leadership practices and human resource innovation in the telecommunications industry, examining organizational transformation and digital workforce strategies.",
+    "category": "case-study"
+  },
+  {
+    "id": "sample-12",
+    "title": "Virtual Medispa Business Plan",
+    "subject": "Business",
+    "level": "Master's",
+    "pages": 12,
+    "format": "APA",
+    "filename": "Virtual Medispa Business Plan - APA7.docx",
+    "description": "A comprehensive business plan for a virtual medical spa, covering market analysis, service offerings, financial projections, and digital marketing strategy in APA format.",
+    "category": "case-study"
+  },
+  {
+    "id": "sample-13",
+    "title": "Design of a Surveillance System for Zika Virus Outbreak",
+    "subject": "Public Health",
+    "level": "Master's",
+    "pages": 12,
+    "format": "APA",
+    "filename": "Zika-Virus-Surveillance-System.docx",
+    "description": "Design and framework for a public health surveillance system to monitor and respond to Zika virus outbreaks, including data collection methodologies and reporting protocols.",
+    "category": "research"
+  }
+]

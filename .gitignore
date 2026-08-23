@@ -1,21 +1,28 @@
 # Python
 __pycache__/
 *.py[cod]
-venv/
+*.pyo
 *.egg-info/
+dist/
+build/
+*.egg
 
 # Django
-db.sqlite3
+*.sqlite3
+db.sqlite3-journal
 media/
-staticfiles/
-
-# Local secrets & generated keys
+logs/
+*.log
 .env
-.vapid_keys.json
+local_settings.py
 
-# ScholarlyWriters - large files
-assignscholarlywriters/samples/docs/*.docx
-assignscholarlywriters/samples/docs/*.pdf
-assignscholarlywriters/backend/.env
-assignscholarlywriters/backend/db.sqlite3
-assignscholarlywriters/backend/media/
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

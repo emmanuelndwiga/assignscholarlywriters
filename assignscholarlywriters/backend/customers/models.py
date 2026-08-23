@@ -15,6 +15,9 @@ class Customer(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['email'], name='cust_email_idx'),
+        ]
 
     def __str__(self):
         return f"{self.name} ({self.email})"

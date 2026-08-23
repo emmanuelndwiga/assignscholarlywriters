@@ -320,10 +320,18 @@
   <script src="js/main.js"></script>
   <script>
     (async function() {
-      var API_BASE = 'http://127.0.0.1:8000';
+      var API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? (window.location.protocol + '//' + window.location.hostname + ':8000')
+        : window.location.origin;
       var grid = document.getElementById('samples-grid');
       var loadingEl = document.getElementById('samples-loading');
       var samples = [];
+
+      function escapeHtml(str) {
+        var d = document.createElement('div');
+        d.appendChild(document.createTextNode(str));
+        return d.innerHTML;
+      }
 
       try {
         var apiResp = await fetch(API_BASE + '/api/samples/');
@@ -363,8 +371,17 @@
       }
 
       function getDownloadUrl(sample) {
-        if (sample._source === 'api' && sample.file_url) return sample.file_url;
-        return 'samples/docs/' + sample.filename;
+        var url;
+        if (sample._source === 'api' && sample.file_url) {
+          url = sample.file_url;
+        } else {
+          url = 'samples/docs/' + encodeURIComponent(sample.filename);
+        }
+        var lower = url.toLowerCase();
+        if (lower.indexOf('http://') !== 0 && lower.indexOf('https://') !== 0 && lower.indexOf('/') !== 0 && lower.indexOf('samples/') !== 0) {
+          return '#';
+        }
+        return url;
       }
 
       function getViewerId(sample) {
@@ -386,27 +403,28 @@
           var isPdf = ext === 'pdf';
           var fileClass = isPdf ? 'file-pdf' : 'file-docx';
           var fileLabel = isPdf ? 'PDF' : 'DOC';
+          var safeFilename = escapeHtml(sample.filename);
 
           var card = document.createElement('div');
           card.className = 'sample-card-v2';
           card.innerHTML =
             '<div class="sample-card-header">' +
               '<div class="sample-file-icon ' + fileClass + '">' + fileLabel + '</div>' +
-              '<div class="badge">' + sample.subject + '</div>' +
-              '<h3>' + sample.title + '</h3>' +
-              '<p>' + sample.description + '</p>' +
+              '<div class="badge">' + escapeHtml(sample.subject) + '</div>' +
+              '<h3>' + escapeHtml(sample.title) + '</h3>' +
+              '<p>' + escapeHtml(sample.description) + '</p>' +
             '</div>' +
             '<div class="sample-card-meta">' +
-              '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>' + sample.level + '</span>' +
-              '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' + sample.pages + ' Pages</span>' +
-              '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>' + sample.format + '</span>' +
+              '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>' + escapeHtml(sample.level) + '</span>' +
+              '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' + escapeHtml(String(sample.pages)) + ' Pages</span>' +
+              '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>' + escapeHtml(sample.format) + '</span>' +
             '</div>' +
             '<div class="sample-card-actions">' +
-              '<a href="sample-viewer.html?id=' + getViewerId(sample) + '&src=' + sample._source + '" class="btn btn-view-sample">' +
+              '<a href="sample-viewer.html?id=' + encodeURIComponent(getViewerId(sample)) + '&src=' + encodeURIComponent(sample._source) + '" class="btn btn-view-sample">' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
                 'View Sample' +
               '</a>' +
-              '<a href="' + getDownloadUrl(sample) + '" download="' + sample.filename + '" class="btn btn-download-sample">' +
+              '<a href="' + getDownloadUrl(sample) + '" download="' + safeFilename + '" class="btn btn-download-sample">' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
                 'Download' +
               '</a>' +

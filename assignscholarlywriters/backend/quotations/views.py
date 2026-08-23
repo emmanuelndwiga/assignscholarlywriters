@@ -1,6 +1,8 @@
+import logging
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.throttling import SimpleRateThrottle
 from django.db import transaction
 from .models import Quotation, QuotationAttachment
 from .serializers import (
@@ -10,37 +12,57 @@ from .serializers import (
     CalculatePriceSerializer,
 )
 from services.models import ServiceType, AcademicLevel
-from pricing.models import DeadlineMultiplier
+from pricing.models import DeadlineMultiplier, PriceConfig, PricingSeason
 from pricing.engine import PricingEngine
 from currencies.models import Currency
 from customers.models import Customer
 from notifications.services import notify_quotation
 
+logger = logging.getLogger('quotations')
+
+ALLOWED_UPLOAD_EXTENSIONS = {'.pdf', '.docx', '.doc', '.txt', '.rtf'}
+MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10 MB
+
+
+class QuotationCreateThrottle(SimpleRateThrottle):
+    scope = 'quotation_create'
+
+
+class CalculatePriceThrottle(SimpleRateThrottle):
+    scope = 'calculate_price'
+
 
 class CalculatePriceView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [CalculatePriceThrottle]
 
     def post(self, request):
         serializer = CalculatePriceSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data
-        service = ServiceType.objects.get(id=data['service_id'])
-        level = AcademicLevel.objects.get(id=data['academic_level_id'])
-        deadline = DeadlineMultiplier.objects.get(id=data['deadline_id'])
-        currency_code = data['currency_code']
+        try:
+            service = ServiceType.objects.get(id=data['service_id'], is_active=True)
+            level = AcademicLevel.objects.get(id=data['academic_level_id'], is_active=True)
+            deadline = DeadlineMultiplier.objects.get(id=data['deadline_id'], is_active=True)
+        except (ServiceType.DoesNotExist, AcademicLevel.DoesNotExist,
+                DeadlineMultiplier.DoesNotExist) as e:
+            return Response(
+                {'error': f'Invalid parameter: {e}'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        result = PricingEngine.calculate(service, level, data['pages'], deadline, currency_code)
+        result = PricingEngine.calculate(
+            service, level, data['pages'], deadline, data['currency_code']
+        )
 
-        return Response({
-            'success': True,
-            'data': result,
-        })
+        return Response({'success': True, 'data': result})
 
 
 class CreateQuotationView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
     parser_classes = [MultiPartParser, FormParser]
+    throttle_classes = [QuotationCreateThrottle]
 
     @transaction.atomic
     def post(self, request):
@@ -48,12 +70,19 @@ class CreateQuotationView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        service = ServiceType.objects.get(id=data['service_id'])
-        level = AcademicLevel.objects.get(id=data['academic_level_id'])
-        deadline = DeadlineMultiplier.objects.get(id=data['deadline_id'])
-        currency = Currency.objects.get(code=data['currency_code'])
-        config = __import__('pricing.models', fromlist=['PriceConfig']).PriceConfig.get_active()
+        try:
+            service = ServiceType.objects.get(id=data['service_id'], is_active=True)
+            level = AcademicLevel.objects.get(id=data['academic_level_id'], is_active=True)
+            deadline = DeadlineMultiplier.objects.get(id=data['deadline_id'], is_active=True)
+            currency = Currency.objects.get(code=data['currency_code'], is_active=True)
+        except (ServiceType.DoesNotExist, AcademicLevel.DoesNotExist,
+                DeadlineMultiplier.DoesNotExist, Currency.DoesNotExist) as e:
+            return Response(
+                {'error': f'Invalid parameter: {e}'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
+        config = PriceConfig.get_active()
         words = data['pages'] * config.words_per_page
 
         result = PricingEngine.calculate(service, level, data['pages'], deadline, data['currency_code'])
@@ -65,7 +94,7 @@ class CreateQuotationView(generics.GenericAPIView):
             whatsapp=data.get('customer_whatsapp', ''),
         )
 
-        current_season = __import__('pricing.models', fromlist=['PricingSeason']).PricingSeason.get_current()
+        current_season = PricingSeason.get_current()
 
         quotation = Quotation.objects.create(
             customer=customer,
@@ -84,20 +113,32 @@ class CreateQuotationView(generics.GenericAPIView):
             status='pending',
         )
 
-        # Handle file uploads
+        # Handle file uploads with validation
         files = request.FILES.getlist('files')
         for f in files:
+            ext = '.' + f.name.rsplit('.', 1)[-1].lower() if '.' in f.name else ''
+            if ext not in ALLOWED_UPLOAD_EXTENSIONS:
+                return Response(
+                    {'error': f'File type not allowed: {ext}. Allowed: {", ".join(ALLOWED_UPLOAD_EXTENSIONS)}'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if f.size > MAX_UPLOAD_SIZE:
+                return Response(
+                    {'error': f'File too large: {f.name} ({f.size} bytes). Max: {MAX_UPLOAD_SIZE} bytes.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             QuotationAttachment.objects.create(
                 quotation=quotation,
                 file=f,
                 original_filename=f.name,
             )
 
-        # Send notifications asynchronously would be better, but sync for now
+        logger.info('Quotation created: Q-%s by %s', quotation.request_id, customer.email)
+
         try:
             notify_quotation(quotation)
         except Exception:
-            pass  # Don't fail the request if notifications fail
+            logger.exception('Failed to send notifications for Q-%s', quotation.request_id)
 
         return Response({
             'success': True,
@@ -107,18 +148,33 @@ class CreateQuotationView(generics.GenericAPIView):
 
 
 class QuotationListView(generics.ListAPIView):
-    permission_classes = [permissions.AllowAny]
+    """List quotations — requires admin login."""
+    permission_classes = [permissions.IsAdminUser]
     serializer_class = QuotationListSerializer
 
     def get_queryset(self):
+        qs = Quotation.objects.select_related(
+            'customer', 'service', 'academic_level', 'deadline', 'currency'
+        ).all()
+
+        status_filter = self.request.query_params.get('status')
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+
         email = self.request.query_params.get('email')
         if email:
-            return Quotation.objects.filter(customer__email=email)
-        return Quotation.objects.none()
+            qs = qs.filter(customer__email__icontains=email)
+
+        return qs
 
 
 class QuotationDetailView(generics.RetrieveAPIView):
-    permission_classes = [permissions.AllowAny]
+    """Retrieve a single quotation — requires admin login."""
+    permission_classes = [permissions.IsAdminUser]
     serializer_class = QuotationDetailSerializer
     lookup_field = 'request_id'
-    queryset = Quotation.objects.all()
+
+    def get_queryset(self):
+        return Quotation.objects.select_related(
+            'customer', 'service', 'academic_level', 'deadline', 'currency', 'pricing_season'
+        ).prefetch_related('attachments')

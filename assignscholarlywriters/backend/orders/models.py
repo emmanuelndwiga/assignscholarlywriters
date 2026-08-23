@@ -23,13 +23,17 @@ class Order(models.Model):
     specifications = models.TextField(blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     currency = models.ForeignKey('currencies.Currency', on_delete=models.SET_NULL, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', db_index=True)
     admin_notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['customer', '-created_at'], name='order_customer_idx'),
+            models.Index(fields=['status', '-created_at'], name='order_status_idx'),
+        ]
 
     def __str__(self):
         return f"ORD-{self.order_id}"

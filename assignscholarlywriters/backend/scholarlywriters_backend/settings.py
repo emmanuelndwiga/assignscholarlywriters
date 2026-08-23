@@ -10,24 +10,33 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+# Fix SSL certificate verification on Windows / Python 3.14+
+try:
+    import certifi
+    os.environ.setdefault('SSL_CERT_FILE', certifi.where())
+except ImportError:
+    pass
 
 from decouple import config
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# --- SECRET KEY ---
+# Fail loudly in production if the secret key is still the insecure default.
+_secret = config('SECRET_KEY', default='')
+if not _secret or _secret.startswith('django-insecure'):
+    if not config('DEBUG', default=True, cast=bool):
+        raise ValueError('Set a strong SECRET_KEY in .env for production!')
+SECRET_KEY = _secret or 'django-insecure-dev-only-key'
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
+# --- DEBUG ---
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
-
-ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') if host.strip()]
+# --- ALLOWED HOSTS ---
+ALLOWED_HOSTS = [h.strip() for h in config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') if h.strip()]
 
 
 # Application definition
@@ -53,10 +62,13 @@ INSTALLED_APPS = [
     'quotations',
     'services',
     'samples',
+    'contact',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'scholarlywriters_backend.middleware.SecurityHeadersMiddleware',
+    'scholarlywriters_backend.middleware.AdminLoginThrottleMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -150,27 +162,52 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 # Django REST Framework
-# Public API by default (calculator endpoints are open); sensitive views can override per-view.
-
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '60/minute',
+        'user': '120/minute',
+        'quotation_create': '10/hour',
+        'payment_create': '10/hour',
+        'payment_execute': '10/hour',
+        'calculate_price': '30/minute',
+        'contact_create': '10/hour',
+    },
 }
 
 
-# CORS (development only - allow all origins)
+# CORS
 # https://github.com/adamchainz/django-cors-headers
-
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in config('CORS_ALLOWED_ORIGINS', default='').split(',')
+    if origin.strip()
+]
+CORS_ALLOW_CREDENTIALS = False
+CORS_ALLOW_METHODS = ['GET', 'POST', 'OPTIONS']
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'authorization',
+    'content-type',
+    'origin',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Uses custom backend to handle SSL cert issues on Windows / Python 3.14+
+EMAIL_BACKEND = 'scholarlywriters_backend.email_backend.SSLFriendlyEmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
@@ -199,5 +236,104 @@ EXCHANGE_RATE_API_URL = config('EXCHANGE_RATE_API_URL', default='https://v6.exch
 
 
 # Frontend URL
-
 FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000')
+
+
+# --- Security Headers (production) ---
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_HTTPONLY = True
+    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Session / CSRF cookie age (1 week)
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
+CSRF_COOKIE_AGE = 60 * 60 * 24 * 7
+
+
+# --- File Upload Limits ---
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024   # 10 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024    # 10 MB
+ALLOWED_UPLOAD_EXTENSIONS = {'.pdf', '.docx', '.doc', '.txt', '.rtf'}
+
+
+# --- Logging ---
+_LOG_DIR = Path(config('LOG_DIR', default=str(BASE_DIR / 'logs')))
+try:
+    os.makedirs(_LOG_DIR, exist_ok=True)
+    _LOG_FILE = _LOG_DIR / 'django.log'
+except (OSError, PermissionError):
+    _LOG_FILE = None
+
+_handlers = ['console']
+_handler_defs = {
+    'console': {
+        'class': 'logging.StreamHandler',
+        'formatter': 'verbose',
+    },
+}
+if _LOG_FILE:
+    _handlers.append('file')
+    _handler_defs['file'] = {
+        'class': 'logging.FileHandler',
+        'filename': str(_LOG_FILE),
+        'formatter': 'verbose',
+    }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': _handler_defs,
+    'loggers': {
+        'django': {
+            'handlers': _handlers,
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': _handlers,
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.security.login': {
+            'handlers': _handlers,
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'quotations': {
+            'handlers': _handlers,
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'payments': {
+            'handlers': _handlers,
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'contact': {
+            'handlers': _handlers,
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+
+# --- Admin Login Throttling ---
+# Fail2ban-compatible: track failed admin logins.
+ADMIN_LOGIN_ATTEMPTS_ALLOWED = 5
+ADMIN_LOGIN_LOCKOUT_SECONDS = 900  # 15 minutes

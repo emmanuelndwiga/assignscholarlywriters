@@ -1,0 +1,10 @@
+Django==6.1
+djangorestframework==3.18.0
+django-cors-headers==4.9.0
+django-ratelimit==4.1.0
+python-decouple==3.8
+paypalrestsdk==1.13.3
+requests==2.34.2
+Pillow==12.3.0
+psycopg2-binary==2.9.12
+gunicorn==23.0.0

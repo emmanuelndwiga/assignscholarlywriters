@@ -35,7 +35,7 @@ class Quotation(models.Model):
     exchange_rate_used = models.DecimalField(max_digits=12, decimal_places=6, default=1.00)
     pricing_season = models.ForeignKey('pricing.PricingSeason', on_delete=models.SET_NULL, null=True, blank=True)
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft', db_index=True)
     admin_notes = models.TextField(blank=True)
     final_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
@@ -45,6 +45,10 @@ class Quotation(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status', '-created_at'], name='quot_status_idx'),
+            models.Index(fields=['customer', '-created_at'], name='quot_customer_idx'),
+        ]
 
     def __str__(self):
         return f"Q-{self.request_id} ({self.customer.email})"

@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js" integrity="sha384-/cXAMbzovUIKbBERjPmR3SnPTh8siWr5lsvFYj1Uq4XP0yaJUZJmsh0YXyGv5P0y" crossorigin="anonymous"></script>
   <style>
     .viewer-page { background: var(--off-white); min-height: 100vh; display: flex; flex-direction: column; }
 
@@ -174,7 +174,9 @@
 
   <script>
     (async function() {
-      var API_BASE = 'http://127.0.0.1:8000';
+      var API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? (window.location.protocol + '//' + window.location.hostname + ':8000')
+        : window.location.origin;
       var params = new URLSearchParams(window.location.search);
       var sampleId = params.get('id');
       var src = params.get('src');
@@ -184,8 +186,20 @@
       var downloadBtn = document.getElementById('viewer-download');
       var metaBar = document.getElementById('viewer-meta');
 
+      function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str || ''));
+        return div.innerHTML;
+      }
+
+      function isSafeUrl(url) {
+        if (!url) return false;
+        var lower = url.toLowerCase();
+        return lower.indexOf('http://') === 0 || lower.indexOf('https://') === 0 || lower.indexOf('/') === 0 || lower.indexOf('samples/') === 0;
+      }
+
       function showError(msg) {
-        container.innerHTML = '<div class="viewer-error"><h2>' + msg + '</h2><p>Please go back and try again.</p><a href="samples.html" class="btn btn-green">Browse Samples</a></div>';
+        container.innerHTML = '<div class="viewer-error"><h2>' + escapeHtml(msg) + '</h2><p>Please go back and try again.</p><a href="samples.html" class="btn btn-green">Browse Samples</a></div>';
       }
 
       if (!sampleId) { showError('No sample specified'); return; }
@@ -194,7 +208,8 @@
 
       if (src === 'api') {
         try {
-          var apiResp = await fetch(API_BASE + '/api/samples/' + sampleId + '/');
+          var safeSampleId = encodeURIComponent(sampleId);
+          var apiResp = await fetch(API_BASE + '/api/samples/' + safeSampleId + '/');
           if (apiResp.ok) {
             var d = await apiResp.json();
             sample = { title: d.title, subject: d.subject, level: d.level, pages: d.pages, format: d.format, filename: d.filename, file_url: d.file_url, description: d.description };
@@ -212,10 +227,11 @@
 
       if (!sample) { showError('Sample not found'); return; }
 
-      document.title = sample.title + ' | ScholarlyWriters';
+      document.title = escapeHtml(sample.title) + ' | ScholarlyWriters';
       titleEl.textContent = sample.title;
 
-      var downloadUrl = sample.file_url || ('samples/docs/' + sample.filename);
+      var downloadUrl = sample.file_url || ('samples/docs/' + encodeURIComponent(sample.filename));
+      if (!isSafeUrl(downloadUrl)) { showError('Invalid file URL'); return; }
       downloadBtn.href = downloadUrl;
       downloadBtn.download = sample.filename;
 
@@ -274,7 +290,19 @@
         var result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
         var docDiv = document.createElement('div');
         docDiv.id = 'docx-render';
-        docDiv.innerHTML = result.value || '<p>This document appears to be empty.</p>';
+        var html = result.value || '<p>This document appears to be empty.</p>';
+        var docDiv2 = document.createElement('div');
+        docDiv2.innerHTML = html;
+        var scripts = docDiv2.querySelectorAll('script');
+        scripts.forEach(function(s) { s.remove(); });
+        var events = docDiv2.querySelectorAll('[onclick],[onerror],[onload],[onmouseover]');
+        events.forEach(function(el) {
+          el.removeAttribute('onclick');
+          el.removeAttribute('onerror');
+          el.removeAttribute('onload');
+          el.removeAttribute('onmouseover');
+        });
+        docDiv.innerHTML = docDiv2.innerHTML;
         container.appendChild(docDiv);
 
         if (result.messages && result.messages.length > 0) {

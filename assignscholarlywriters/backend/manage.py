@@ -3,6 +3,13 @@
 import os
 import sys
 
+# Fix SSL certificate verification on Windows / Python 3.14+
+try:
+    import certifi
+    os.environ['SSL_CERT_FILE'] = certifi.where()
+except ImportError:
+    pass
+
 
 def main():
     """Run administrative tasks."""

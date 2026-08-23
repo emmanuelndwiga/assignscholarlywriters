@@ -1,31 +1,45 @@
+import logging
 import requests
-import json
 from decouple import config
+from django.conf import settings
+from django.core.mail import EmailMessage
 from django.utils import timezone
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 
+logger = logging.getLogger('quotations')
 
-BUSINESS_EMAIL = config('BUSINESS_EMAIL', default='')
+BUSINESS_EMAIL = config('BUSINESS_EMAIL', default='') or 'scholarlywriters9@gmail.com'
 WHATSAPP_API_URL = config('WHATSAPP_API_URL', default='')
 WHATSAPP_API_TOKEN = config('WHATSAPP_API_TOKEN', default='')
 
 
 def send_email_notification(quotation):
-    """Send quotation details to business email."""
+    """Send quotation details to business email, including any file attachments."""
     from .models import NotificationLog
 
     subject = f"New Quotation Request: Q-{quotation.request_id}"
     message = _build_email_message(quotation)
 
     try:
-        send_mail(
+        email_msg = EmailMessage(
             subject=subject,
-            message=message,
-            from_email=config('EMAIL_HOST_USER', default=''),
-            recipient_list=[BUSINESS_EMAIL],
-            fail_silently=False,
+            body=message,
+            from_email=getattr(settings, 'EMAIL_HOST_USER', '') or '',
+            to=[BUSINESS_EMAIL],
+            reply_to=[quotation.customer.email] if quotation.customer.email else [],
         )
+
+        # Attach uploaded files
+        attachments = quotation.attachments.all()
+        for att in attachments:
+            try:
+                att.file.open('rb')
+                email_msg.attach(att.original_filename, att.file.read())
+                att.file.close()
+            except Exception:
+                logger.warning('Could not attach file %s for Q-%s', att.original_filename, quotation.request_id)
+
+        email_msg.send(fail_silently=False)
+
         NotificationLog.objects.create(
             notification_type='email',
             recipient=BUSINESS_EMAIL,
@@ -37,6 +51,7 @@ def send_email_notification(quotation):
         )
         return True
     except Exception as e:
+        logger.exception('Failed to send email for Q-%s', quotation.request_id)
         NotificationLog.objects.create(
             notification_type='email',
             recipient=BUSINESS_EMAIL,
@@ -90,6 +105,7 @@ def send_whatsapp_notification(quotation):
         )
         return True
     except Exception as e:
+        logger.exception('Failed to send WhatsApp for Q-%s', quotation.request_id)
         NotificationLog.objects.create(
             notification_type='whatsapp',
             recipient=config('WHATSAPP_RECIPIENT_NUMBER', default=''),
@@ -110,6 +126,8 @@ def notify_quotation(quotation):
 def _build_email_message(q):
     currency = q.currency.code if q.currency else 'GBP'
     symbol = q.currency.symbol if q.currency else '£'
+    attachments = q.attachments.all()
+    att_list = '\n'.join(f'  - {a.original_filename}' for a in attachments) if attachments else '  None'
     return (
         f"NEW QUOTATION REQUEST\n"
         f"{'='*40}\n"
@@ -137,6 +155,9 @@ def _build_email_message(q):
         f"SPECIFICATIONS\n"
         f"{'-'*40}\n"
         f"{q.specifications or 'No additional specifications provided.'}\n\n"
+        f"ATTACHMENTS\n"
+        f"{'-'*40}\n"
+        f"{att_list}\n\n"
         f"Status: {q.get_status_display()}\n"
     )
 

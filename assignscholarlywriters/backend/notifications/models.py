@@ -24,6 +24,9 @@ class NotificationLog(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status', '-created_at'], name='notif_status_idx'),
+        ]
 
     def __str__(self):
         return f"{self.notification_type} to {self.recipient} ({self.status})"

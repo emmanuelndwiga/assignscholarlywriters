@@ -1,3 +1,4 @@
+import os
 from django.db import models
 
 
@@ -25,6 +26,9 @@ class Sample(models.Model):
     class Meta:
         ordering = ['order', '-created_at']
         verbose_name_plural = 'Samples'
+        indexes = [
+            models.Index(fields=['category', 'is_active'], name='sample_cat_active_idx'),
+        ]
 
     def __str__(self):
         return self.title
@@ -32,7 +36,7 @@ class Sample(models.Model):
     @property
     def filename(self):
         if self.file:
-            return self.file.name.split('/')[-1]
+            return os.path.basename(self.file.name)
         return ''
 
     @property
@@ -44,5 +48,7 @@ class Sample(models.Model):
     @property
     def file_extension(self):
         if self.file:
-            return self.filename.split('.')[-1].lower()
+            name = os.path.basename(self.file.name)
+            _, ext = os.path.splitext(name)
+            return ext.lstrip('.').lower()
         return ''

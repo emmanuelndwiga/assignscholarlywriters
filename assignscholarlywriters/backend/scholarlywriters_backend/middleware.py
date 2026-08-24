@@ -5,6 +5,7 @@ permissions policy, admin brute-force protection, and additional hardening.
 import time
 import logging
 from django.conf import settings
+from django.core.cache import cache
 from django.http import HttpResponseForbidden
 
 logger = logging.getLogger('django.security')
@@ -46,10 +47,6 @@ class SecurityHeadersMiddleware:
         return response
 
 
-# --- Admin brute-force protection (in-memory, resets on server restart) ---
-_login_attempts = {}  # { ip: [timestamp, ...] }
-
-
 def _get_client_ip(request):
     xff = request.META.get('HTTP_X_FORWARDED_FOR')
     if xff:
@@ -59,11 +56,13 @@ def _get_client_ip(request):
 
 class AdminLoginThrottleMiddleware:
     """
-    Throttle POST /admin/login/ by IP.
+    Throttle POST /admin/login/ by IP using Django's cache framework.
     After MAX_ATTEMPTS failed attempts within LOCKOUT_SECONDS, return 429.
     Detects failed login: Django admin returns 200 (re-renders login form)
     on failure, 302 (redirect) on success.
     """
+
+    _CACHE_PREFIX = 'admin_login_attempts_'
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -76,10 +75,12 @@ class AdminLoginThrottleMiddleware:
         lockout_seconds = getattr(settings, 'ADMIN_LOGIN_LOCKOUT_SECONDS', 900)
 
         ip = _get_client_ip(request)
-        now = time.time()
-        attempts = _login_attempts.get(ip, [])
+        cache_key = self._CACHE_PREFIX + ip.replace('.', '_').replace(':', '_')
+
+        attempts = cache.get(cache_key, [])
 
         # Prune old entries outside the lockout window
+        now = time.time()
         attempts = [t for t in attempts if now - t < lockout_seconds]
 
         if len(attempts) >= max_attempts:
@@ -96,13 +97,13 @@ class AdminLoginThrottleMiddleware:
         # Django admin redirects (302) on successful login; 200 = still on login form = failure
         if response.status_code != 302:
             attempts.append(now)
-            _login_attempts[ip] = attempts
+            cache.set(cache_key, attempts, lockout_seconds)
             logger.info(
                 'Admin login failed from IP %s (%d/%d attempts)',
                 ip, len(attempts), max_attempts,
             )
         else:
-            _login_attempts.pop(ip, None)
+            cache.delete(cache_key)
             logger.info('Admin login successful from IP %s', ip)
 
         return response

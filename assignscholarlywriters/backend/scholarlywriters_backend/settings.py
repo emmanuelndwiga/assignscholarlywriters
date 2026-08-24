@@ -30,7 +30,7 @@ FRONTEND_DIR = BASE_DIR.parent
 # Fail loudly in production if the secret key is still the insecure default.
 _secret = config('SECRET_KEY', default='')
 if not _secret or _secret.startswith('django-insecure'):
-    if not config('DEBUG', default=True, cast=bool):
+    if not config('DEBUG', default=False, cast=bool):
         raise ValueError('Set a strong SECRET_KEY in .env for production!')
 SECRET_KEY = _secret or 'django-insecure-dev-only-key'
 
@@ -108,6 +108,7 @@ DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL', default='sqlite:///db.sqlite3'),
         conn_max_age=600,
+        ssl_require=True,
     )
 }
 
@@ -148,7 +149,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
 
 # Media files (user uploads)
 MEDIA_URL = '/media/'
@@ -209,9 +214,16 @@ CORS_ALLOW_HEADERS = [
 ]
 
 
+# CSRF Trusted Origins (required for cross-origin POSTs)
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in config('CSRF_TRUSTED_ORIGINS', default='').split(',')
+    if origin.strip()
+]
+
+
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/
-# Uses custom backend to handle SSL cert issues on Windows / Python 3.14+
 EMAIL_BACKEND = 'scholarlywriters_backend.email_backend.SSLFriendlyEmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
@@ -219,6 +231,7 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 BUSINESS_EMAIL = config('BUSINESS_EMAIL', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=config('EMAIL_HOST_USER', default=''))
 
 
 # WhatsApp Business API
@@ -244,6 +257,14 @@ EXCHANGE_RATE_API_URL = config('EXCHANGE_RATE_API_URL', default='https://v6.exch
 FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000')
 
 
+# --- Cache (used by admin throttle and other caching) ---
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+
 # --- Security Headers (production) ---
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
@@ -255,7 +276,7 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
-    CSRF_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_HTTPONLY = False  # JS needs to read csrftoken for X-CSRFToken header
     SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -288,8 +309,10 @@ _handler_defs = {
 if _LOG_FILE:
     _handlers.append('file')
     _handler_defs['file'] = {
-        'class': 'logging.FileHandler',
+        'class': 'logging.handlers.RotatingFileHandler',
         'filename': str(_LOG_FILE),
+        'maxBytes': 5 * 1024 * 1024,  # 5 MB
+        'backupCount': 5,
         'formatter': 'verbose',
     }
 

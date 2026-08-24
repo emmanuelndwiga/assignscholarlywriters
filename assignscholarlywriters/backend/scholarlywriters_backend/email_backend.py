@@ -1,37 +1,44 @@
 """
 Custom SMTP email backend that handles SSL certificate issues
 on Windows with Python 3.14+ (stricter OpenSSL rejects some CA bundles).
+In production, always uses strict SSL verification.
 """
 import ssl
 import smtplib
+from django.conf import settings
 from django.core.mail.backends.smtp import EmailBackend
 
 
 class SSLFriendlyEmailBackend(EmailBackend):
     """
     SMTP backend that creates an SSL context with fallback.
-    First tries normal verification; if it fails on this platform,
-    falls back to unverified TLS (safe for dev / known SMTP servers).
+    In production (DEBUG=False), always uses strict verification.
+    In development, falls back to unverified TLS if strict fails.
     """
 
     def _make_ssl_context(self):
-        # Try strict verification first
+        # Always try strict verification first
         ctx = ssl.create_default_context()
-        # Test if it actually works against the target server
-        try:
-            test = smtplib.SMTP(self.host, self.port, timeout=5)
-            test.starttls(context=ctx)
-            test.quit()
-            return ctx
-        except ssl.SSLError:
-            pass
-        except Exception:
-            return ctx  # Non-SSL error, return strict context anyway
 
-        # Fallback: unverified TLS (no cert validation)
-        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
+        if getattr(settings, 'DEBUG', False):
+            # Dev only: test if strict works, fall back if not
+            try:
+                test = smtplib.SMTP(self.host, self.port, timeout=5)
+                test.starttls(context=ctx)
+                test.quit()
+                return ctx
+            except ssl.SSLError:
+                pass
+            except Exception:
+                return ctx
+
+            # Dev fallback: unverified TLS
+            ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            return ctx
+
+        # Production: always strict verification
         return ctx
 
     def open(self):
